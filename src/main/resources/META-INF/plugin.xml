@@ -43,6 +43,28 @@
             language="Galen"
             implementationClass="com.galenlinter.lang.GalenCommenter"/>
 
+        <lang.foldingBuilder
+            language="Galen"
+            implementationClass="com.galenlinter.highlight.GalenFoldingBuilder"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenInvalidSpec"
+            displayName="Invalid spec arguments"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="ERROR"
+            implementationClass="com.galenlinter.inspections.GalenInvalidSpecInspection"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenSuspiciousSpec"
+            displayName="Suspicious spec arguments"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GalenSuspiciousSpecInspection"/>
+
         <localInspection
             language="Galen"
             shortName="GalenObjectNameComment"

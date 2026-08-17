@@ -60,9 +60,6 @@ private class Impl(private val b: PsiBuilder) {
 
         /** Safety bound for single-line lookahead scans. */
         const val MAX_LINE_LOOKAHEAD = 2000
-
-        /** Galen defaults an omitted locator type to css. */
-        val LOCATOR_TYPES = setOf("id", "css", "xpath")
     }
 
     // ---- block structure (phase 1) ----------------------------------------
@@ -177,6 +174,13 @@ private class Impl(private val b: PsiBuilder) {
         b.advanceLexer()
         val hasArgumentsOnLine = b.tokenType != GalenTypes.EOL && !b.eof()
 
+        // Mark the path argument of the file-loading statements so it can host a file reference
+        // (ctrl+click) and a "file not found" inspection. `@lib` is included for consistency even
+        // though it names a library bundled inside the Galen jar rather than a path on disk.
+        if (hasArgumentsOnLine && (keyword == "@import" || keyword == "@script" || keyword == "@lib")) {
+            SpecArgumentParser(b).parseStatementPath()
+        }
+
         return when (keyword) {
             "@objects" -> LineResult(GalenTypes.OBJECTS_BLOCK, BlockKind.OBJECTS)
             "@groups" -> LineResult(GalenTypes.GROUPS_BLOCK, BlockKind.GROUPS)
@@ -274,7 +278,9 @@ private class Impl(private val b: PsiBuilder) {
         if (b.tokenType == GalenTypes.PERCENT) b.advanceLexer()
         if (b.tokenType == GalenTypes.STRING) b.advanceLexer()
 
+        var specName: String? = null
         if (b.tokenType == GalenTypes.WORD) {
+            specName = b.tokenText
             val name = b.mark()
             b.advanceLexer()
             name.done(GalenTypes.SPEC_NAME)
@@ -282,6 +288,12 @@ private class Impl(private val b: PsiBuilder) {
 
         if (!b.eof() && b.tokenType != GalenTypes.EOL) {
             val args = b.mark()
+            if (specName != null && specName in GalenTypes.SPEC_NAMES) {
+                SpecArgumentParser(b).parse(specName)
+            }
+            // Whatever the per-spec parser did not claim — and everything, when the spec name is
+            // unrecognised — stays inside SPEC_ARGS as plain tokens. An unknown spec name is not a
+            // parse error: the inspection reports it, so a quick fix can offer a correction.
             while (!b.eof() && b.tokenType != GalenTypes.EOL) b.advanceLexer()
             args.done(GalenTypes.SPEC_ARGS)
         }
@@ -303,7 +315,11 @@ private class Impl(private val b: PsiBuilder) {
             b.error("GL109: Object definition must start with an object name")
             return LineResult(GalenTypes.OBJECT_DEF, BlockKind.OBJECTS)
         }
-        b.advanceLexer() // object name
+
+        // The declared name, marked so it can act as a rename/find-usages target.
+        val name = b.mark()
+        b.advanceLexer()
+        name.done(GalenTypes.OBJECT_NAME)
 
         // Optional `@(l, t, w, h)` correction and `@grouped(...)` annotation, in either order.
         while (b.tokenType == GalenTypes.CORRECTION || b.tokenType == GalenTypes.AT_KEYWORD) {
@@ -319,11 +335,13 @@ private class Impl(private val b: PsiBuilder) {
         // An explicit locator type is only a locator type if something follows it; otherwise the
         // word is the locator itself (Galen defaults an omitted type to css).
         if (b.tokenType == GalenTypes.WORD &&
-            LOCATOR_TYPES.contains(b.tokenText ?: "") &&
+            GalenTypes.LOCATOR_TYPES.contains(b.tokenText ?: "") &&
             b.lookAhead(1) != GalenTypes.EOL &&
             b.lookAhead(1) != null
         ) {
+            val locatorType = b.mark()
             b.advanceLexer()
+            locatorType.done(GalenTypes.LOCATOR_TYPE)
         }
 
         if (!b.eof() && b.tokenType != GalenTypes.EOL) {

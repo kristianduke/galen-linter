@@ -1,0 +1,30 @@
+<html>
+<body>
+Reports spec arguments that Galen's own parser rejects. A file containing any of these cannot run.
+<p>Each rule mirrors a specific check in Galen's source:</p>
+<ul>
+    <li><b>GL301</b> &mdash; unknown spec name. <code>SpecReader</code> registers exactly 21 specs.</li>
+    <li><b>GL302</b> &mdash; <code>aligned</code> is missing its edge, or pairs an edge with the wrong
+        direction. <code>horizontally</code> accepts <code>all</code>, <code>top</code>,
+        <code>bottom</code>, <code>centered</code>; <code>vertically</code> accepts <code>all</code>,
+        <code>left</code>, <code>right</code>, <code>centered</code>.</li>
+    <li><b>GL303</b> &mdash; an object is declared <code>absent</code> alongside a spec that requires
+        it to be visible, so the pair can never pass.</li>
+    <li><b>GL309</b> &mdash; a <code>count</code> range was given a <code>px</code> unit; it takes a
+        plain number.</li>
+    <li><b>GL318</b> &mdash; <code>near</code> with no side. <code>SpecNearProcessor</code> throws
+        when no location is supplied, so a bare distance is invalid.</li>
+    <li><b>GL319</b> &mdash; a side other than <code>left</code>, <code>right</code>, <code>top</code>
+        or <code>bottom</code>. Matching is case sensitive.</li>
+    <li><b>GL320</b> &mdash; an <code>aligned</code> direction other than <code>horizontally</code>
+        or <code>vertically</code>.</li>
+    <li><b>GL322</b> &mdash; <code>on</code> without the word <code>edge</code>.</li>
+    <li><b>GL323</b> &mdash; a corner combining two opposite sides, such as
+        <code>on top bottom edge</code>.</li>
+</ul>
+<p>
+    Arguments supplied by a <code>${...}</code> expression are skipped, since their value is only
+    known at run time.
+</p>
+</body>
+</html>

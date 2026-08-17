@@ -620,11 +620,21 @@ Notes:
 
 ### 10.4 Sides
 
-Positional specs take side keywords after the range **[D]**:
+Positional specs take side keywords after the range. `specs/Side.java` accepts **exactly** these four, matched **case-sensitively**, and throws a `SyntaxException` for anything else **[S]**:
 
 `left`, `right`, `top`, `bottom`
 
 Multiple sides may follow one range (`10px left right`), and multiple `range+sides` groups are comma-separated (`10px left right, 20px top bottom`).
+
+`parser/ExpectSides.java` requires **at least one** side per location — `"There are no sides defined for location"` **[S]**. Whether that makes sides mandatory depends on the spec: see §11.1 (`near`, mandatory) versus §11.4 (`inside`, optional) and §11.13 (`on`, optional).
+
+### 10.5 Numbers
+
+Decimals **are** accepted: `ExpectRangeValue` / `RangeValue` retain precision **[S]**. Do not reject `width 10.5 px`.
+
+Units are `px`, `%`, or none — `count` configures the range with no ending word **[S]**.
+
+In `N % of <path>`, the path is read as **any** word; Galen does not validate it against `width`/`height` at parse time **[S]**, so an unknown property is a lint warning rather than a syntax error.
 
 ---
 
@@ -649,6 +659,10 @@ textfield:
     near button 5px bottom left
     near button 5px top, 10px left
 ```
+
+**Sides are mandatory for `near`** **[S]**. `SpecNearProcessor` reads locations via
+`Expectations.locations()` and throws when the list is empty, so a bare `near button 10px` is
+invalid. The docs' own component example gets this wrong — see §19.
 
 ### 11.2 `above` / `below`
 
@@ -730,7 +744,9 @@ Edge        = "all" | "top" | "bottom" | "left" | "right" | "centered" ;
 ErrorRate   = Number "px" ;
 ```
 
-**Valid Direction × Edge combinations [D]:**
+Both the direction **and** the edge are **required** **[S]** — `SpecAlignedProcessor` reads the edge via `Alignment.parse` before the object name, and an invalid pairing throws `"Incorrect side for <direction> alignment: <EDGE>"`. The error rate is optional.
+
+**Valid Direction × Edge combinations [S]:**
 
 | | `all` | `top` | `bottom` | `left` | `right` | `centered` |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
@@ -872,7 +888,14 @@ user-picture-label:
     on bottom left edge user-picture 20px right, 10 px top
 ```
 
-Semantics: the element is offset from the named **corner** of the other element **[D]**. **[?]** Whether a single-word corner (`on left edge …`) is legal is not shown.
+Semantics: the element is offset from the named **corner** of the other element **[D]**.
+
+From `SpecOnProcessor` **[S]**:
+
+- The literal word **`edge` is required** — Galen throws `Missing "edge"` without it.
+- The corner is **optional**, defaulting to `TOP` + `LEFT`. So `on edge x 10px left` is legal, and a single-word corner (`on left edge …`) is too.
+- At most **two** side words, and they may not combine two horizontals (`top bottom`) or two verticals (`left right`).
+- Unlike `near`, the trailing locations are **not** required.
 
 > Note the collision: `on` is both a **spec** (inside an object body) and part of `@on` (a tag statement). They are distinguished by the `@` and by context.
 
@@ -1540,8 +1563,8 @@ Note `contains`, `visible`, `absent`, `on`, `inside`, `width`, `height`, `all`, 
 
 These are errors or ambiguities **in the official guide itself**. Do not encode them as grammar without checking the reference parser.
 
-1. **`aligned` without an edge keyword.** The *Special Objects → screen* example is `aligned horizontally screen`, omitting the required `all|top|bottom|centered`. Either the edge is optional (defaulting to something) or the example is wrong. **Verify.**
-2. **`near` without sides.** The component example has `near user-pic 10px` with no side keyword, while §Near always shows sides. Either sides are optional on `near` or the example is wrong. **Verify.**
+1. **`aligned` without an edge keyword — CONFIRMED DOC BUG [S].** The *Special Objects → screen* example is `aligned horizontally screen`, which omits the required edge. `SpecAlignedProcessor` parses the edge before the object name, so Galen reads `screen` as the edge and throws. Pinned by `GalenSpecValidationTest.testAlignedWithoutAnEdgeIsReported`.
+2. **`near` without sides — CONFIRMED DOC BUG [S].** The component example has `near user-pic 10px` with no side. `SpecNearProcessor` throws when no location is given. Pinned by `GalenSpecValidationTest.testNearWithoutASideIsReported`.
 3. **Missing colon in a rule-body example.** `banner` followed by an indented `width 1000px` — every other object statement uses `banner:`. Almost certainly a typo in the docs.
 4. **Spec list is incomplete.** The "Galen supports the following specs" bullet list omits `visible`, `count`, `ocr`, and `image`, all of which are documented in their own sections. Use the full list in §18.2.
 5. **Fenced language tag typo.** One code block in the source HTML is tagged `gale-specs` rather than `galen-specs` — irrelevant to the language, noted only because it affects scraping.
@@ -1720,15 +1743,18 @@ Design notes:
 - ~~`@elseif`/`@else` without `@if`~~ → a real `SyntaxException`.
 - Variable names validate as `[a-zA-Z_][a-zA-Z0-9_]*` — narrower than object names, which allow `-` and `.` (§13).
 
+- ~~`near` sides / `aligned` edges optional?~~ → both **required**; the two docs examples are bugs (§19).
+- ~~`on` grammar~~ → `edge` required, corner optional (defaults top-left), max two non-opposing sides, locations optional (§11.13).
+- ~~Decimal support in ranges~~ → accepted, precision retained (§10.5).
+- ~~Text operation chaining~~ → allowed, and *any* unrecognised word is accepted as an operation (§11.7), which is why GL306 is a warning.
+- ~~Relative property validation~~ → Galen accepts any path (§10.5), so GL315 is a warning.
+
 **Still open** — confirm before turning any of these into a hard error:
 
 1. `${…}` brace-matching algorithm as Galen implements it (nested braces, braces inside JS strings). GalenLinter currently scans balanced braces and skips quoted runs; verify against `VarsParser`.
-2. Whether `near` sides and `aligned` edges are truly optional (§19 items 1–2) — check `SpecNearProcessor` / `SpecAlignedProcessor` and `ExpectSides`.
-3. Object-name collision behaviour across imports.
-4. Whether `@grouped(...)` accepts multiple comma-separated groups, and its ordering vs. `@(…)`.
-5. Legal object-name character set.
-6. Whether text operations can be chained.
-7. Whether `count` is restricted to `global:`.
-8. Decimal support in ranges (`ExpectRange` / `ExpectNumber`).
-9. Ordering of `%` and `"note"` on a single spec line.
-10. Whether nested `@on` is legal.
+2. Object-name collision behaviour across imports.
+3. Whether `@grouped(...)` accepts multiple comma-separated groups, and its ordering vs. `@(…)`.
+4. Legal object-name character set.
+5. Whether `count` is restricted to `global:`.
+6. Ordering of `%` and `"note"` on a single spec line.
+7. Whether nested `@on` is legal.

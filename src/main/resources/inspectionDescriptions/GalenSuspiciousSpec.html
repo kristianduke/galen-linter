@@ -1,0 +1,27 @@
+<html>
+<body>
+Reports spec arguments that Galen accepts but that are almost certainly mistakes.
+<p>
+    These are not syntax errors &mdash; every one of them parses and runs. That is precisely why they
+    are worth reporting: the spec quietly does something other than what was intended.
+</p>
+<ul>
+    <li><b>GL305</b> &mdash; the argument to <code>matches</code> is not a valid Java regular
+        expression. It is compiled at run time, so the failure surfaces late.</li>
+    <li><b>GL306</b> &mdash; an unknown text operation.
+        <code>SpecTextProcessor</code> accumulates <i>any</i> unrecognised word as an operation, so
+        <code>text lowercse is "x"</code> runs and performs no case folding at all. Also reports
+        <code>lowercase</code> and <code>uppercase</code> on the <code>css</code> spec, which does
+        not support them.</li>
+    <li><b>GL310</b> &mdash; an image <code>contrast</code> level outside 0&ndash;258.</li>
+    <li><b>GL311</b> &mdash; <code>denoise</code> applied as <code>filter</code> rather than
+        <code>map-filter</code>. It only operates on the black-and-white comparison map.</li>
+    <li><b>GL312</b> &mdash; an <code>image</code> spec with no <code>file</code> sample, leaving
+        nothing to compare against.</li>
+    <li><b>GL313</b> &mdash; an unknown image option or filter name.</li>
+    <li><b>GL315</b> &mdash; a relative property other than <code>width</code> or
+        <code>height</code>. <code>ExpectRange</code> accepts any path without validating it.</li>
+    <li><b>GL316</b> &mdash; the same spec declared twice on one object.</li>
+</ul>
+</body>
+</html>
