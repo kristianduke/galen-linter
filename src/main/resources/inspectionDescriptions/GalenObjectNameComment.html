@@ -1,0 +1,23 @@
+<html>
+<body>
+Reports lines inside an <code>@objects</code> block that look like object definitions but are
+silently parsed as comments.
+<p>
+    Galen decides that a line is a comment by testing whether its <i>trimmed</i> text starts with
+    <code>#</code>, and it does so before any structural parsing. An object whose name begins with
+    <code>#</code> is therefore never defined, and every later reference to it fails at run time
+    with no syntax error pointing at the cause.
+</p>
+<p><b>Example</b></p>
+<pre><code>
+@objects
+    #footer   div.footer     <!-- parsed as a comment: 'footer' is never defined -->
+    header    div.header
+</code></pre>
+<p>
+    Because prose comments are perfectly normal inside <code>@objects</code>, this inspection only
+    fires when a line has no space after <code>#</code> and contains at least two
+    whitespace-separated fields.
+</p>
+</body>
+</html>

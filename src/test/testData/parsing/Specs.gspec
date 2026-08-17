@@ -1,0 +1,42 @@
+= Specs =
+    textfield:
+        near button 5px top, 10px left
+        left-of button 10px
+        above description 10 to 20 px
+
+    button:
+        inside container 10px left right, 20px top bottom
+        inside partly container -10px top left
+        width < 101 px
+        height 95 to 100 % of main/height
+        aligned horizontally all menu_item-2 1px
+        centered horizontally inside box 10px
+
+    greeting:
+        text lowercase is "welcome to our cool website!"
+        text matches "Welcome .* website!"
+        css font-family starts "Helvetica"
+
+    comments:
+        absent
+
+    menu:
+        contains partly menu_item-*
+
+    user-picture-label:
+        on top left edge user-picture 20 px left, 10px bottom
+
+    login-form:
+        color-scheme 10% white, 4 to 5 % black, < 30% #f845b7
+        color-scheme ~80% white-gray, ~20% #000-#555-#955
+
+    menu_item-1:
+        image file item-1.png, error 1%, filter blur 4, map-filter denoise 5
+        image file imgs/content.png, ignore-objects [banner-*, ad]
+
+    global:
+        count any menu_item-* is 4 to 5
+
+    header-logo:
+        "should be squared" width 100% of header-logo/height
+        % width 100px

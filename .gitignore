@@ -1,0 +1,13 @@
+.gradle/
+build/
+out/
+*.iml
+.intellijPlatform/
+
+# IntelliJ project files — keep encodings, ignore per-user state
+.idea/workspace.xml
+.idea/shelf/
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/httpRequests/

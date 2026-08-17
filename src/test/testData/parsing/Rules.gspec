@@ -1,0 +1,23 @@
+@rule %{name} should be squared
+    ${name}:
+        width 100% of ${name}/height
+
+@rule %{object} should be squared with %{size: [0-9]+} pixel size
+    ${object}:
+        width ${size} px
+        height ${size} px
+
+@rule if %{objectName} is visible
+    @if ${isVisible(objectName)}
+        @ruleBody
+
+= Main section =
+    | header-icon should be squared
+    | logo should be squared with 100 pixel size
+
+    header-icon:
+        | should be squared
+
+    | if banner is visible
+        banner:
+            width 1000px

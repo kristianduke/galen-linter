@@ -1,0 +1,91 @@
+<idea-plugin>
+    <!--
+      id, name and version are injected by patchPluginXml from gradle.properties, so that
+      gradle.properties stays the single source of truth for anything the release workflow
+      and updatePlugins.xml also need to know.
+    -->
+    <vendor>Kristian</vendor>
+
+    <description><![CDATA[
+        Editor support and linting for <b>Galen Framework</b> page specs (<code>.gspec</code>),
+        targeting the Galen spec language v2.x.
+        <br/><br/>
+        Provides syntax highlighting, a full parser with per-line error recovery, and inspections
+        that catch structural mistakes at edit time instead of at the end of a Selenium run.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+            name="Galen Spec"
+            implementationClass="com.galenlinter.lang.GalenFileType"
+            fieldName="INSTANCE"
+            language="Galen"
+            extensions="gspec"/>
+
+        <lang.parserDefinition
+            language="Galen"
+            implementationClass="com.galenlinter.lang.GalenParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory
+            language="Galen"
+            implementationClass="com.galenlinter.highlight.GalenSyntaxHighlighterFactory"/>
+
+        <annotator
+            language="Galen"
+            implementationClass="com.galenlinter.highlight.GalenAnnotator"/>
+
+        <colorSettingsPage
+            implementation="com.galenlinter.highlight.GalenColorSettingsPage"/>
+
+        <lang.commenter
+            language="Galen"
+            implementationClass="com.galenlinter.lang.GalenCommenter"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenObjectNameComment"
+            displayName="Object definition silently parsed as a comment"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GL005ObjectNameCommentInspection"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenMixedIndentation"
+            displayName="Indentation mixes tabs and spaces"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GL001MixedIndentationInspection"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenInconsistentIndentStep"
+            displayName="Inconsistent indentation step"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WEAK WARNING"
+            implementationClass="com.galenlinter.inspections.GL002InconsistentIndentStepInspection"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenTrailingWhitespace"
+            displayName="Trailing whitespace"
+            groupName="Galen"
+            enabledByDefault="false"
+            level="WEAK WARNING"
+            implementationClass="com.galenlinter.inspections.GL003TrailingWhitespaceInspection"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenMissingFinalNewline"
+            displayName="File does not end with a newline"
+            groupName="Galen"
+            enabledByDefault="false"
+            level="WEAK WARNING"
+            implementationClass="com.galenlinter.inspections.GL006MissingFinalNewlineInspection"/>
+    </extensions>
+</idea-plugin>

@@ -1,0 +1,22 @@
+@objects
+    header          #header
+    menu            ul.menu
+    content         #content
+    footer          #footer
+    navigation_bar  #navigation
+
+@groups
+    (skeleton_elements, mainframe)  header, menu, content, footer
+    mainframe                       navigation_bar
+
+= Skeleton =
+    &skeleton_elements:
+        inside screen 0px left right
+
+    header, menu, content, footer:
+        inside screen 0px left right
+
+= Mainframe =
+    @forEach [&mainframe] as item
+        ${item}:
+            inside screen 10px left

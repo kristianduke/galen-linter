@@ -1,0 +1,35 @@
+@import header.gspec
+@lib some-library.js
+
+@script i18n.function.js
+
+@script
+    data = ["Home", "My Notes", "About", "Contact"];
+
+@set
+    commonHeaderMargin    10 to 20px
+    contentMargin  ~ 20px
+
+@set menuMargin  ${find("menu_item-2").left() - find("menu_item-1").right()}
+
+= Main section =
+    @for [1 - 5, 7, 9, 14, 20 - 25] as index
+        menu_item-${index}:
+            left-of menu_item-${index + 1} 10px
+
+    @forEach [menu_item-*] as item, index as i
+        ${item}:
+            text is "${data[i-1]}"
+
+    @if ${isVisible("banner-1")}
+        banner-1:
+            width 300 px
+    @elseif ${isVisible("banner-2")}
+        banner-2:
+            width 300 px
+    @else
+        banner-3:
+            width 300 px
+
+    @if ${count("menu.item-*") === 0}
+        @die "There are no menu items"

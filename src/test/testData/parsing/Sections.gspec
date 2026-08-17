@@ -1,0 +1,20 @@
+= Header section =
+    = Icons and text =
+        header.icon:
+            inside header 10px top left
+
+        header.caption:
+            text is "Greetings!"
+
+    = User section =
+        header.username:
+            inside header 10px top right
+
+= Main section =
+    @on mobile, desktop
+        menu:
+            height 300 px
+
+    @on *
+        menu:
+            height 70px

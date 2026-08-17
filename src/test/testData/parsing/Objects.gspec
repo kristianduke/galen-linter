@@ -1,0 +1,13 @@
+# Object definitions exercise locator types, nesting, corrections and groups.
+@objects
+    search_panel            id      search-bar
+    search_panel_input      xpath   //div[@id='search-bar']/input[@type='text']
+    search_panel_button     css     #search-bar a
+    implicit_css            #search-bar a
+    menu_item-*     css     #menu li a
+    nested   #container
+        input      input[type='text']
+        button     a
+    corrected    @(-30, +100, 0, 0)   id  some-container
+    exact        @(0, 0, 0, =200)     id  some-container
+    logo @grouped(image_validation)  img.logo
