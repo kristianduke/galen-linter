@@ -246,8 +246,11 @@ private class Impl(private val b: PsiBuilder) {
                 continue
             }
             val ref = b.mark()
-            // A reference is `&group`, `${expr}` or a (possibly wildcarded) object name.
-            if (b.tokenType == GalenTypes.AMP) b.advanceLexer()
+            // A reference is `&group`, `${expr}` or a (possibly wildcarded) object name. Marking
+            // them with the same element types the spec arguments use means the statement header
+            // gets ctrl+click and unresolved-reference checking for free.
+            val isGroup = b.tokenType == GalenTypes.AMP
+            if (isGroup) b.advanceLexer()
             while (!b.eof() &&
                 b.tokenType != GalenTypes.EOL &&
                 b.tokenType != GalenTypes.COLON &&
@@ -255,7 +258,7 @@ private class Impl(private val b: PsiBuilder) {
             ) {
                 b.advanceLexer()
             }
-            ref.done(GalenTypes.OBJECT_REF)
+            ref.done(if (isGroup) GalenTypes.GROUP_REF else GalenTypes.OBJECT_NAME_REF)
         }
         refs.done(GalenTypes.OBJECT_REF_LIST)
 

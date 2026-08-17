@@ -3,6 +3,11 @@ package com.galenlinter.lang
 import com.galenlinter.lexer.GalenLexer
 import com.galenlinter.parser.GalenParser
 import com.galenlinter.psi.GalenFile
+import com.galenlinter.psi.GalenFilePathRef
+import com.galenlinter.psi.GalenGroupRef
+import com.galenlinter.psi.GalenObjectDefinition
+import com.galenlinter.psi.GalenObjectName
+import com.galenlinter.psi.GalenObjectNameRef
 import com.galenlinter.psi.GalenPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -46,7 +51,18 @@ class GalenParserDefinition : ParserDefinition {
 
     override fun getStringLiteralElements(): TokenSet = GalenTypes.STRINGS
 
-    override fun createElement(node: ASTNode): PsiElement = GalenPsiElement(node)
+    /**
+     * Most nodes only need a generic wrapper; these few carry behaviour — a name that can be
+     * renamed, or a reference that can be navigated.
+     */
+    override fun createElement(node: ASTNode): PsiElement = when (node.elementType) {
+        GalenTypes.OBJECT_DEF -> GalenObjectDefinition(node)
+        GalenTypes.OBJECT_NAME -> GalenObjectName(node)
+        GalenTypes.OBJECT_NAME_REF -> GalenObjectNameRef(node)
+        GalenTypes.GROUP_REF -> GalenGroupRef(node)
+        GalenTypes.FILE_PATH_REF -> GalenFilePathRef(node)
+        else -> GalenPsiElement(node)
+    }
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = GalenFile(viewProvider)
 }

@@ -104,7 +104,8 @@ object GalenTypes {
     @JvmField val SECTION_TITLE = GalenElementType("SECTION_TITLE")
     @JvmField val OBJECT_STATEMENT = GalenElementType("OBJECT_STATEMENT")
     @JvmField val OBJECT_REF_LIST = GalenElementType("OBJECT_REF_LIST")
-    @JvmField val OBJECT_REF = GalenElementType("OBJECT_REF")
+    // Object statement headers use OBJECT_NAME_REF / GROUP_REF, the same element types as spec
+    // arguments, so navigation and unresolved-reference checking apply to both uniformly.
     @JvmField val SPEC_LINE = GalenElementType("SPEC_LINE")
     @JvmField val SPEC_NAME = GalenElementType("SPEC_NAME")
     @JvmField val SPEC_ARGS = GalenElementType("SPEC_ARGS")

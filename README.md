@@ -12,24 +12,32 @@ edit time.
 
 ## What it does today
 
-- **Syntax highlighting**, including the parts a lexer cannot identify on its own. Spec names,
-  locators and object references are all bare words, so they are coloured from the parse tree.
 - **A real parser**, not a regex highlighter. It mirrors Galen's own two-phase model: block
-  structure comes from indentation first, then each line is dispatched on its first token.
-- **Per-line error recovery**, so one malformed line never blanks out the rest of the file.
+  structure comes from indentation first, then each line is dispatched on its first token. Error
+  recovery is per line, so one malformed line never blanks out the rest of the file.
+- **Syntax highlighting**, including the parts a lexer cannot identify on its own. Spec names,
+  sides, matchers, alignment keywords, locators and object references are all bare words — several
+  reused in unrelated roles — so they are coloured from the parse tree. A misspelled keyword simply
+  fails to light up.
+- **Code folding** for sections, `@objects`, `@groups`, control flow, rules and object statements.
+- **Navigation.** Ctrl+click an object name to reach its `@objects` entry, across files and through
+  `@import`. Find usages and rename work too, including renaming usages in importing files.
+  Wildcard families resolve: `menu_item-3` finds its `menu_item-*` declaration. File paths in
+  `@import`, `component`, `image file` and friends are clickable, and `${...}` variables navigate
+  to their `@set` entry, loop binding or rule parameter.
 - **Inspections** for the mistakes the language makes easy to hide:
 
   | Rule | Reports |
   |---|---|
-  | GL001 | Indentation mixing tabs and spaces |
-  | GL002 | Inconsistent indent step within a file |
-  | GL003 | Trailing whitespace |
+  | GL001 / GL002 / GL003 / GL006 | Mixed tab-and-space indentation, inconsistent indent step, trailing whitespace, missing final newline |
   | GL005 | An object definition silently parsed as a comment |
-  | GL006 | Missing final newline |
-  | GL101 | Unknown `@` statement |
-  | GL103 | `@elseif` / `@else` with no matching `@if` |
-  | GL104 | Inconsistent indentation between siblings |
-  | GL105 / GL107 / GL109 | Missing `:`, unclosed section header, malformed object definition |
+  | GL101 / GL103 / GL104 / GL105 / GL107 / GL109 | Unknown `@` statement, dangling `@elseif`/`@else`, inconsistent sibling indentation, missing `:`, unclosed section header, malformed object definition |
+  | GL201 / GL202 / GL501 | Unresolved object, unresolved group, missing file |
+  | GL301 / GL302 / GL303 / GL309 / GL318 / GL319 / GL320 / GL322 / GL323 | Spec arguments Galen itself rejects — unknown spec, bad `aligned` direction or edge, `absent` contradicting a positional spec, `count` with a unit, `near` without a side, an invalid side, `on` without `edge`, a corner combining opposite sides |
+  | GL305 / GL306 / GL310 / GL311 / GL312 / GL313 / GL315 / GL316 | Things Galen tolerates but you probably did not mean — an invalid Java regex, an unknown text operation, a bad contrast level, `denoise` outside `map-filter`, an `image` with no sample, unknown image options, an unknown relative property, a duplicated spec |
+
+  Most carry a "did you mean" suggestion. Anything supplied by a `${...}` expression is never
+  reported, since its value is only known at run time.
 
 **GL005** is the one worth knowing about. Galen decides a line is a comment by testing whether
 its *trimmed* text starts with `#`, before any structural parsing. So inside `@objects`:

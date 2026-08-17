@@ -47,6 +47,45 @@
             language="Galen"
             implementationClass="com.galenlinter.highlight.GalenFoldingBuilder"/>
 
+        <lang.findUsagesProvider
+            language="Galen"
+            implementationClass="com.galenlinter.lang.GalenFindUsagesProvider"/>
+
+        <!-- Object-name -> declaring file, so navigation and completion stay flat as the
+             project grows and work for files that are not open. -->
+        <fileBasedIndex implementation="com.galenlinter.index.GalenObjectIndex"/>
+
+        <!-- Required for rename: PsiReferenceBase delegates writing new text to a manipulator. -->
+        <lang.elementManipulator
+            forClass="com.galenlinter.psi.GalenObjectNameRef"
+            implementationClass="com.galenlinter.resolve.GalenObjectNameRefManipulator"/>
+
+        <lang.elementManipulator
+            forClass="com.galenlinter.psi.GalenGroupRef"
+            implementationClass="com.galenlinter.resolve.GalenGroupRefManipulator"/>
+
+        <lang.elementManipulator
+            forClass="com.galenlinter.psi.GalenFilePathRef"
+            implementationClass="com.galenlinter.resolve.GalenFilePathRefManipulator"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenUnresolvedReference"
+            displayName="Unresolved object or group reference"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GalenUnresolvedReferenceInspection"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenMissingFile"
+            displayName="Referenced file cannot be found"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GalenMissingFileInspection"/>
+
         <localInspection
             language="Galen"
             shortName="GalenInvalidSpec"

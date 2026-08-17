@@ -1,0 +1,19 @@
+<html>
+<body>
+Reports a file referenced by <code>@import</code>, <code>@script</code>, <code>component</code>,
+<code>image file</code> or <code>filter mask</code> that cannot be found.
+<p>
+    Paths resolve against the directory of the file containing them, matching Galen, which builds
+    its context path from the parent of the file currently being processed.
+</p>
+<p>
+    Reported as a warning because Galen resolves through
+    <code>GalenUtils.findFileOrResourceAsStream</code>, so a path that is absent from the filesystem
+    may still be a valid classpath resource.
+</p>
+<p>
+    <code>@lib</code> is never reported: it names a library bundled inside the Galen distribution
+    rather than a path on disk.
+</p>
+</body>
+</html>

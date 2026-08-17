@@ -5,6 +5,47 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0]
+
+Objects declared under `@objects` are now real symbols: ctrl+click, find usages and rename, across
+files and through `@import`.
+
+### Added
+
+- **Go to declaration** from any object name — in a spec argument or an object statement header —
+  to its `@objects` entry. Resolution handles dotted nested names (`search_panel.input`) and
+  wildcard families, so `menu_item-3` finds its `menu_item-*` declaration and `item-#` matches only
+  digits.
+- **Cross-file resolution through `@import`**, transitively. `ImportProcessor` merges an imported
+  file's objects into the importing spec, so imported names really are in scope. Import cycles
+  terminate rather than recurse.
+- **A file-based index** of object declarations, so navigation and find-usages stay fast as a
+  project grows and work for files that are not open.
+- **Find usages** and **rename**. Renaming an object updates its usages, including in files that
+  import it.
+- **Ctrl+click on file paths** in `@import`, `@script`, `component`, `image file` and
+  `filter mask`, resolved relative to the containing file the way Galen does.
+- **`&group` references** resolving to their `@groups` declaration, including the bracketed
+  `(a, b) objects` form.
+- **`${...}` variable navigation** to the declaring `@set` entry, `@for`/`@forEach` binding
+  (including `next`, `prev` and `index`) or `%{...}` rule parameter. Loop and rule bindings are
+  scoped to the construct that declares them.
+- Inspections: GL201 unresolved object, GL202 unresolved group, GL501 missing file.
+
+### Notes
+
+- **Rename is refused for wildcard families.** Renaming `menu_item-*` cannot rewrite the
+  `menu_item-3` usages it matches, and renaming only the declaration would silently break the file,
+  so it fails with an explanation instead.
+- Unresolved references are **warnings, not errors**: an `@import` may point at a classpath resource
+  the IDE cannot see, and a JavaScript rule can add objects at run time via `addObjectSpecs`.
+- When a name is declared in a file that is not imported, the message says so and names the file —
+  a forgotten `@import` is the usual cause.
+- Names built from `${...}` are never reported unresolved.
+- Renaming a `${...}` variable is not supported: the identifier sits inside an opaque JavaScript
+  expression that cannot be rewritten reliably.
+- Test suite grew from 73 to 118.
+
 ## [0.2.0]
 
 Spec arguments are now parsed individually rather than as one opaque blob, which is what makes
@@ -72,6 +113,7 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/kristianduke/galen-linter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kristianduke/galen-linter/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kristianduke/galen-linter/releases/tag/v0.1.0

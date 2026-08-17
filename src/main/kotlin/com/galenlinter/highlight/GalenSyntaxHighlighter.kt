@@ -37,7 +37,8 @@ class GalenSyntaxHighlighter : SyntaxHighlighterBase() {
             put(GalenTypes.PERCENT, GalenColors.WARNING_PREFIX)
             put(GalenTypes.PIPE, GalenColors.STATEMENT)
             put(GalenTypes.EQ, GalenColors.SECTION)
-            put(GalenTypes.AMP, GalenColors.OBJECT_REF)
+            // `&` only ever introduces a group reference.
+            put(GalenTypes.AMP, GalenColors.GROUP_REF)
 
             put(GalenTypes.LT, GalenColors.OPERATOR)
             put(GalenTypes.GT, GalenColors.OPERATOR)

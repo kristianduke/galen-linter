@@ -1,0 +1,22 @@
+<html>
+<body>
+Reports object and object-group references that do not resolve to a declaration in scope.
+<p>
+    Galen puts an imported file's objects into the importing spec &mdash; <code>ImportProcessor</code>
+    merges objects as well as specs &mdash; so resolution follows this file and everything it
+    imports, transitively. A wildcard declaration such as <code>menu_item-*</code> satisfies a
+    reference to <code>menu_item-3</code>.
+</p>
+<p>
+    When the name is declared in a file that is <i>not</i> imported, the message says so and names
+    the file, since a forgotten <code>@import</code> is the usual cause.
+</p>
+<p><b>Why this is a warning rather than an error</b></p>
+<p>
+    Resolution can come up empty without anything being wrong: an <code>@import</code> may point at
+    a classpath resource that the IDE cannot see, and a JavaScript rule can contribute objects at
+    run time through <code>addObjectSpecs</code>. Names built from <code>${...}</code> expressions
+    are never reported at all.
+</p>
+</body>
+</html>
