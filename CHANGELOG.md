@@ -5,6 +5,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0]
+
+### Added
+
+- **Documentation on hover** and in Quick Documentation (Ctrl+Q), for every spec, every statement,
+  and the keyword vocabularies — sides, matchers, text operations, alignment keywords, count
+  filters, locator types, special objects, units and image options. Each entry gives what the
+  construct does, its syntax, its accepted values and an example.
+- The documentation records behaviour Galen's own guide gets wrong or omits: that `near` requires a
+  side, that `aligned` requires an edge and which pairs are legal, that `on` requires the word
+  `edge`, that a `count` range carries no unit, and that `@lib` exists at all.
+- **Hovering an object name** shows its locator and the file that declares it, resolved across
+  `@import`. A wildcard family explains itself — `menu_item-*` notes that Galen names the matches
+  `menu_item-1`, `menu_item-2` and so on.
+
+### Notes
+
+- Verified that embedded JavaScript survives lexing intact: `${...}` is a single token even when it
+  contains braces or quoted strings (`${ count("a-*") > 0 && data["}"] }`), `@script` bodies are
+  kept raw and never produce Galen syntax errors, and `${...}` inside a quoted expectation is part
+  of the string, matching Galen's own substitution. Pinned by tests.
+- `${...}` is still coloured as one span. IntelliJ IDEA Community bundles no JavaScript support, so
+  the contents cannot be injected and highlighted as JavaScript.
+- Test suite grew from 170 to 193.
+
 ## [0.4.0]
 
 Completion and quick fixes, plus two fixes for issues reported from using 0.2.0.
@@ -164,7 +189,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/kristianduke/galen-linter/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/kristianduke/galen-linter/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kristianduke/galen-linter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kristianduke/galen-linter/compare/v0.1.0...v0.2.0

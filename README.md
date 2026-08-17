@@ -25,6 +25,9 @@ edit time.
   Wildcard families resolve: `menu_item-3` finds its `menu_item-*` declaration. File paths in
   `@import`, `component`, `image file` and friends are clickable, and `${...}` variables navigate
   to their `@set` entry, loop binding or rule parameter.
+- **Documentation on hover** for every spec, statement and keyword — what it does, its syntax and
+  its accepted values. Hovering an object name shows its locator and which file declares it, across
+  `@import`.
 - **Completion** that knows where you are: spec names inside an object statement, object names
   (including from imported files) where an object belongs, side keywords after a range, and only
   the alignment edges valid for the direction you chose.
