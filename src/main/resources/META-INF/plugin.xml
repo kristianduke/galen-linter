@@ -51,6 +51,12 @@
             language="Galen"
             implementationClass="com.galenlinter.lang.GalenFindUsagesProvider"/>
 
+        <!-- Without this the platform falls back to Java identifier rules, which reject the
+             dashes that Galen object names routinely contain. -->
+        <lang.namesValidator
+            language="Galen"
+            implementationClass="com.galenlinter.lang.GalenNamesValidator"/>
+
         <completion.contributor
             language="Galen"
             implementationClass="com.galenlinter.completion.GalenCompletionContributor"/>

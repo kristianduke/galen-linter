@@ -32,6 +32,12 @@ Completion and quick fixes, plus two fixes for issues reported from using 0.2.0.
 
 ### Fixed
 
+- **Renaming an object to a name containing a dash is no longer refused.** With no names validator
+  registered, the platform falls back to Java identifier rules, which reject `-` — so renaming
+  `hero-header` to anything with a dash failed as "not a valid identifier" despite Galen being
+  perfectly happy with it. Galen names are now validated by the lexer's own rule: a name is valid
+  when it lexes as a single word. A leading `#` is still rejected, since it would turn the
+  declaration into a comment and silently delete the object.
 - **A collapsed block no longer repeats its header.** The fold region started *after* the header
   line while the placeholder repeated it, so collapsing rendered
   `hero-header:hero-header: ...`. The region now covers the header text itself, starting after the
@@ -48,7 +54,7 @@ Completion and quick fixes, plus two fixes for issues reported from using 0.2.0.
 ### Notes
 
 - Colour choices are all configurable under Editor | Color Scheme | Galen Spec, now 30 named keys.
-- Test suite grew from 118 to 161.
+- Test suite grew from 118 to 170.
 
 ## [0.3.0]
 

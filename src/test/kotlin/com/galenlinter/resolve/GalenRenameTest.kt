@@ -101,6 +101,33 @@ class GalenRenameTest : BasePlatformTestCase() {
         assertEquals("renamed", definition.name)
     }
 
+    /**
+     * Regression: renaming to a dashed name was refused as "not a valid identifier", because with
+     * no NamesValidator registered the platform applies Java identifier rules. Galen object names
+     * routinely contain dashes.
+     */
+    fun testRenamingToADashedNameIsAllowed() {
+        myFixture.configureByText(
+            "test.gspec",
+            "@objects\n    hea<caret>der   #header\n\n= Main =\n    header:\n        visible\n",
+        )
+        myFixture.renameElementAtCaret("hero-header")
+        myFixture.checkResult(
+            "@objects\n    hero-header   #header\n\n= Main =\n    hero-header:\n        visible\n",
+        )
+    }
+
+    fun testRenamingFromADashedNameIsAllowed() {
+        myFixture.configureByText(
+            "test.gspec",
+            "@objects\n    hero-hea<caret>der   #header\n\n= Main =\n    menu:\n        below hero-header 10px\n",
+        )
+        myFixture.renameElementAtCaret("site-banner")
+        myFixture.checkResult(
+            "@objects\n    site-banner   #header\n\n= Main =\n    menu:\n        below site-banner 10px\n",
+        )
+    }
+
     fun testQualifiedNameOfNestedObject() {
         myFixture.configureByText(
             "test.gspec",
