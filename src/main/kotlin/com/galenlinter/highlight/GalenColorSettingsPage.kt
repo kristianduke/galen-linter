@@ -44,6 +44,9 @@ class GalenColorSettingsPage : ColorSettingsPage {
             "imgopt" to GalenColors.IMAGE_OPTION,
             "path" to GalenColors.FILE_PATH,
             "color" to GalenColors.COLOR_VALUE,
+            "jskw" to GalenColors.JS_KEYWORD,
+            "jsapi" to GalenColors.JS_GALEN_API,
+            "jsstr" to GalenColors.JS_STRING,
             "group" to GalenColors.GROUP_REF,
         )
 
@@ -87,6 +90,14 @@ class GalenColorSettingsPage : ColorSettingsPage {
                 ${'$'}{item}:
                     <spec>left-of</spec> ${'$'}{nextItem} 10<unit>px</unit>
 
+            @if ${'$'}{<jsapi>isVisible</jsapi>(<jsstr>"banner"</jsstr>) && <jsapi>count</jsapi>(<jsstr>"item-*"</jsstr>) > 0}
+                <header>banner</header>:
+                    <spec>visible</spec>
+
+        @script
+            <jskw>var</jskw> data = [<jsstr>"Home"</jsstr>, <jsstr>"About"</jsstr>];
+            <jskw>function</jskw> pick(i) { <jskw>return</jskw> data[i - 1]; }
+
         @rule %{name} should be squared
             ${'$'}{name}:
                 <spec>width</spec> 100<unit>%</unit> <unit>of</unit> ${'$'}{name}/<prop>height</prop>
@@ -124,6 +135,11 @@ class GalenColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Operator", GalenColors.OPERATOR),
             AttributesDescriptor("Punctuation", GalenColors.PUNCTUATION),
             AttributesDescriptor("Brackets", GalenColors.BRACKETS),
+            AttributesDescriptor("Embedded JavaScript//Keyword", GalenColors.JS_KEYWORD),
+            AttributesDescriptor("Embedded JavaScript//String", GalenColors.JS_STRING),
+            AttributesDescriptor("Embedded JavaScript//Number", GalenColors.JS_NUMBER),
+            AttributesDescriptor("Embedded JavaScript//Comment", GalenColors.JS_COMMENT),
+            AttributesDescriptor("Embedded JavaScript//Galen API function", GalenColors.JS_GALEN_API),
         )
     }
 }

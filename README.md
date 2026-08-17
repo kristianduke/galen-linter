@@ -33,9 +33,10 @@ edit time.
   the alignment edges valid for the direction you chose.
 - **Quick fixes** for every suggestion — correct a misspelled keyword or object name, swap an
   invalid alignment edge, and add the `@import` that a referenced object needs.
-- **JavaScript support, when available.** With a JavaScript plugin installed (IDEA Ultimate,
-  WebStorm), `${...}` expressions and `@script` blocks get real JS highlighting and completion via
-  language injection. Optional — IDEA Community is unaffected.
+- **Embedded JavaScript is highlighted and checked.** With a JavaScript plugin installed (IDEA
+  Ultimate, WebStorm), `${...}` expressions and `@script` blocks get full JS support via language
+  injection. Without one — IDEA Community bundles no JavaScript — a built-in fallback colours them
+  and catches unbalanced brackets, unterminated strings, and the `.name()` trap.
 - **Inspections** for the mistakes the language makes easy to hide:
 
   | Rule | Reports |

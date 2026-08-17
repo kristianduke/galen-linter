@@ -1,0 +1,29 @@
+<html>
+<body>
+Reports problems in the JavaScript embedded in <code>${...}</code> expressions and
+<code>@script</code> blocks.
+<p>
+    This is a fallback for IDEs without JavaScript support &mdash; IntelliJ IDEA Community bundles
+    none. When a JavaScript plugin <i>is</i> installed, the embedded code is injected and analysed
+    properly, and this inspection stands down entirely rather than duplicating it.
+</p>
+<ul>
+    <li><b>GL701</b> &mdash; <code>.name</code> called as a method. It is the one page-element
+        member that is a property; every other one (<code>.width()</code>,
+        <code>.isVisible()</code>) is a call, so <code>find("x").name()</code> throws at run time.</li>
+    <li><b>GL702</b> &mdash; an unterminated string literal.</li>
+    <li><b>GL703</b> &mdash; a near-miss of a Galen API function, such as <code>isVisble</code> for
+        <code>isVisible</code>. Only reported when the name is called and differs by a single
+        character, since a <code>@script</code> file may define any function it likes.</li>
+    <li><b>GL704</b> &mdash; an unbalanced bracket, brace or parenthesis. Checked only inside a
+        <code>${...}</code> expression, which must be self-contained; a <code>@script</code> body is
+        one program spread across lines, so a brace opened on one line is legitimately closed on
+        another.</li>
+</ul>
+<p>
+    Anything requiring scope or type analysis &mdash; undefined variables, wrong argument counts
+    &mdash; is deliberately not reported. Without a parser those cannot be judged reliably, and a
+    false positive on working JavaScript is worse than a missed one.
+</p>
+</body>
+</html>

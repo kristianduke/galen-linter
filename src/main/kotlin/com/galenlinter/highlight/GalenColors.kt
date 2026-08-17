@@ -146,4 +146,24 @@ object GalenColors {
     /** `&groupName`. */
     val GROUP_REF: TextAttributesKey =
         createTextAttributesKey("GALEN_GROUP_REF", Default.STATIC_FIELD)
+
+    // ---- embedded JavaScript ----------------------------------------------
+    // Applied only where no JavaScript plugin is installed; otherwise injection colours it
+    // properly. All fall back to keys the bundled schemes actually paint.
+
+    val JS_KEYWORD: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_KEYWORD", Default.KEYWORD)
+
+    val JS_STRING: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_STRING", Default.STRING)
+
+    val JS_NUMBER: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_NUMBER", Default.NUMBER)
+
+    val JS_COMMENT: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_COMMENT", Default.LINE_COMMENT)
+
+    /** `count`, `find`, `findAll`, `isVisible`, `isPresent`, `viewport`, `screen`. */
+    val JS_GALEN_API: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_API", Default.INSTANCE_FIELD)
 }

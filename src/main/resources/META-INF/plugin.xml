@@ -48,6 +48,11 @@
             language="Galen"
             implementationClass="com.galenlinter.highlight.GalenAnnotator"/>
 
+        <!-- Colours embedded JavaScript where no JS plugin is available to inject it. -->
+        <annotator
+            language="Galen"
+            implementationClass="com.galenlinter.highlight.GalenJsAnnotator"/>
+
         <colorSettingsPage
             implementation="com.galenlinter.highlight.GalenColorSettingsPage"/>
 
@@ -97,6 +102,15 @@
         <lang.elementManipulator
             forClass="com.galenlinter.psi.GalenFilePathRef"
             implementationClass="com.galenlinter.resolve.GalenFilePathRefManipulator"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenJs"
+            displayName="Problems in embedded JavaScript"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GalenJsInspection"/>
 
         <localInspection
             language="Galen"
