@@ -42,19 +42,47 @@ class GalenFoldingBuilder : FoldingBuilderEx() {
     }
 
     /**
-     * The region after the header line, or null when there is nothing to fold — a section with no
-     * body, or an `@objects` entry with no nested children, must not offer a fold arrow.
+     * The foldable region, or null when there is nothing to fold — a section with no body, or an
+     * `@objects` entry with no nested children, must not offer a fold arrow.
+     *
+     * The region **includes the header text**, because the placeholder already repeats it. Folding
+     * only the body left the header rendered twice:
+     *
+     * ```
+     * hero-header:hero-header: ...
+     * ^^^^^^^^^^^^ still in the document
+     *             ^^^^^^^^^^^^^^^^ the placeholder
+     * ```
+     *
+     * It starts after the indentation rather than at the very start of the line, so a collapsed
+     * block keeps its place in the indentation structure instead of jumping to column zero.
      */
     private fun foldRangeOf(element: PsiElement): TextRange? {
-        val elementRange = element.textRange
         val headerEnd = headerEndOffset(element) ?: return null
 
-        var end = elementRange.endOffset
+        var end = element.textRange.endOffset
         val text = element.containingFile.text
         while (end > headerEnd && (text[end - 1] == '\n' || text[end - 1] == '\r')) end--
 
-        if (end <= headerEnd + 1) return null
-        return TextRange(headerEnd, end)
+        // Only the header line survived the trim, so there is no body.
+        if (end <= headerEnd) return null
+
+        return TextRange(contentStartOffset(element), end)
+    }
+
+    /**
+     * Where this line's own text begins, skipping its indentation.
+     *
+     * The indentation is always the element's first child, since the parser opens each line's
+     * marker before consuming it.
+     */
+    private fun contentStartOffset(element: PsiElement): Int {
+        val first = element.node.firstChildNode
+        return if (first != null && first.elementType == GalenTypes.LINE_INDENT) {
+            first.textRange.endOffset
+        } else {
+            element.textRange.startOffset
+        }
     }
 
     /** Offset of the first newline inside the element: the end of its header line. */

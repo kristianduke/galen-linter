@@ -5,6 +5,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **A collapsed block no longer repeats its header.** The fold region started *after* the header
+  line while the placeholder repeated it, so collapsing rendered
+  `hero-header:hero-header: ...`. The region now covers the header text itself, starting after the
+  indentation so a collapsed block keeps its place in the indentation structure.
+- **Spec names are visibly coloured.** `visible`, `contains`, `width` and the rest were recognised
+  and annotated correctly, but their colour key fell back to `FUNCTION_CALL`, which itself falls
+  back to `IDENTIFIER` — plain default text in essentially every scheme. They now fall back to
+  `KEYWORD`, which is what they are: the language's verbs.
+- **Object statement headers are coloured, and distinctly.** `hero-header:` shares an element type
+  with an ordinary object reference, so it is now told apart by position and given its own
+  "Object statement header" colour. (Headers were uncoloured entirely before 0.3.0, which changed
+  their element type.)
+
 ## [0.3.0]
 
 Objects declared under `@objects` are now real symbols: ctrl+click, find usages and rename, across

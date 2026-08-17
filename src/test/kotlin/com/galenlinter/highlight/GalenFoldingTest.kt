@@ -88,10 +88,37 @@ class GalenFoldingTest : BasePlatformTestCase() {
         assertTrue("Expected the object header as placeholder, got $texts", texts.contains("header: ..."))
     }
 
-    fun testFoldRangeStartsAfterTheHeaderLine() {
+    /**
+     * Regression: the fold must cover the header, because the placeholder repeats it.
+     *
+     * Folding only the body rendered the header twice — `hero-header:hero-header: ...`.
+     */
+    fun testFoldCoversTheHeaderSoItIsNotDuplicated() {
+        val text = "= Main =\n    hero-header:\n        visible\n        width 100px\n"
+        val folds = foldsIn(text)
+
+        val statement = folds.first { it.element.elementType.toString().contains("OBJECT_STATEMENT") }
+        val folded = text.substring(statement.range.startOffset, statement.range.endOffset)
+        assertTrue(
+            "The folded region must include the header text, got '$folded'",
+            folded.startsWith("hero-header:"),
+        )
+
+        val placeholder = GalenFoldingBuilder().getPlaceholderText(statement.element)
+        assertEquals("hero-header: ...", placeholder)
+    }
+
+    /** Indentation stays outside the fold, so a collapsed block keeps its place in the structure. */
+    fun testFoldStartsAfterTheIndentation() {
+        val text = "= Main =\n    hero-header:\n        visible\n"
+        val statement = foldsIn(text).first { it.element.elementType.toString().contains("OBJECT_STATEMENT") }
+        assertEquals(text.indexOf("hero-header"), statement.range.startOffset)
+    }
+
+    fun testTopLevelFoldStartsAtColumnZero() {
         val text = "= Main =\n    header:\n        visible\n"
         val section = foldsIn(text).first { it.element.elementType.toString().contains("SECTION") }
-        assertEquals("Fold must begin at the end of the header line", text.indexOf('\n'), section.range.startOffset)
+        assertEquals(0, section.range.startOffset)
         assertFalse(
             "Fold must not include the trailing newline",
             text.substring(section.range.startOffset, section.range.endOffset).endsWith("\n"),

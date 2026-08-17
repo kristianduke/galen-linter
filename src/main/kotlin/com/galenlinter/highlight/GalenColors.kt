@@ -11,8 +11,25 @@ object GalenColors {
     val SECTION: TextAttributesKey =
         createTextAttributesKey("GALEN_SECTION", Default.CLASS_NAME)
 
+    /**
+     * Spec names are the language's verbs — `visible`, `width`, `inside` — so they fall back to
+     * KEYWORD.
+     *
+     * They previously fell back to FUNCTION_CALL, which itself falls back to IDENTIFIER, meaning
+     * colour schemes render it as plain default text: recognised, but visually indistinguishable
+     * from an unknown word.
+     */
     val SPEC_NAME: TextAttributesKey =
-        createTextAttributesKey("GALEN_SPEC_NAME", Default.FUNCTION_CALL)
+        createTextAttributesKey("GALEN_SPEC_NAME", Default.KEYWORD)
+
+    /**
+     * The `objectName:` that opens a block of specs.
+     *
+     * Distinct from a plain object reference: it is the anchor the specs below it hang off, and it
+     * is what the eye scans for when reading a spec file.
+     */
+    val OBJECT_HEADER: TextAttributesKey =
+        createTextAttributesKey("GALEN_OBJECT_HEADER", Default.FUNCTION_DECLARATION)
 
     val UNKNOWN_SPEC: TextAttributesKey =
         createTextAttributesKey("GALEN_UNKNOWN_SPEC", Default.IDENTIFIER)

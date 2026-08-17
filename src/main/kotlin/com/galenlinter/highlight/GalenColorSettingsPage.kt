@@ -29,6 +29,7 @@ class GalenColorSettingsPage : ColorSettingsPage {
         mutableMapOf(
             "spec" to GalenColors.SPEC_NAME,
             "obj" to GalenColors.OBJECT_REF,
+            "header" to GalenColors.OBJECT_HEADER,
             "special" to GalenColors.SPECIAL_OBJECT,
             "loc" to GalenColors.LOCATOR,
             "loctype" to GalenColors.LOCATOR_TYPE,
@@ -63,7 +64,7 @@ class GalenColorSettingsPage : ColorSettingsPage {
 
         = <title>Main section</title> =
             @on mobile, desktop
-                <obj>header</obj>:
+                <header>header</header>:
                     <spec>inside</spec> <special>screen</special> 0<unit>px</unit> <side>top</side> <side>left</side>
                     <spec>height</spec> 40 <unit>px</unit>
                     <spec>width</spec> 100 <unit>%</unit> <unit>of</unit> <special>screen</special>/<prop>width</prop>
@@ -72,14 +73,14 @@ class GalenColorSettingsPage : ColorSettingsPage {
                     % <spec>width</spec> 100<unit>px</unit>
                     "should be squared" <spec>width</spec> 100<unit>%</unit> <unit>of</unit> <obj>header</obj>/<prop>height</prop>
 
-                <group>&skeleton</group>:
+                <header>&skeleton</header>:
                     <spec>inside</spec> <special>viewport</special> 0<unit>px</unit> <side>left</side> <side>right</side>
 
-            <obj>logo</obj>:
+            <header>logo</header>:
                 <spec>image</spec> <imgopt>file</imgopt> <path>imgs/logo.png</path>, <imgopt>error</imgopt> 4<unit>%</unit>, <imgopt>map-filter</imgopt> <imgopt>denoise</imgopt> 5
                 <spec>color-scheme</spec> ~80<unit>%</unit> <color>white</color>, ~20<unit>%</unit> <color>#000-#555</color>
 
-            <spec>global</spec>:
+            <header>global</header>:
                 <spec>count</spec> <mod>any</mod> <obj>menu_item-*</obj> <match>is</match> 4
 
             @forEach [menu_item-*] as item, next as nextItem
@@ -98,6 +99,7 @@ class GalenColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Section title", GalenColors.SECTION),
             AttributesDescriptor("Spec name", GalenColors.SPEC_NAME),
             AttributesDescriptor("Unrecognised spec name", GalenColors.UNKNOWN_SPEC),
+            AttributesDescriptor("Object statement header", GalenColors.OBJECT_HEADER),
             AttributesDescriptor("Object reference", GalenColors.OBJECT_REF),
             AttributesDescriptor("Special object", GalenColors.SPECIAL_OBJECT),
             AttributesDescriptor("Object group reference", GalenColors.GROUP_REF),
