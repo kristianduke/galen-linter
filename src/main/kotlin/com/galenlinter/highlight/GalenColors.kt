@@ -8,8 +8,15 @@ object GalenColors {
     val STATEMENT: TextAttributesKey =
         createTextAttributesKey("GALEN_STATEMENT", Default.KEYWORD)
 
+    /**
+     * Section headers.
+     *
+     * Not CLASS_NAME: `DEFAULT_CLASS_NAME` has no entry at all in the bundled colour schemes, so it
+     * falls through to IDENTIFIER and renders as plain text. METADATA carries a real foreground in
+     * both the light and dark schemes.
+     */
     val SECTION: TextAttributesKey =
-        createTextAttributesKey("GALEN_SECTION", Default.CLASS_NAME)
+        createTextAttributesKey("GALEN_SECTION", Default.METADATA)
 
     /**
      * Spec names are the language's verbs — `visible`, `width`, `inside` — so they fall back to
@@ -28,8 +35,13 @@ object GalenColors {
      * Distinct from a plain object reference: it is the anchor the specs below it hang off, and it
      * is what the eye scans for when reading a spec file.
      */
+    /**
+     * Distinguished from a plain object reference by style rather than hue: CONSTANT is the same
+     * purple family as INSTANCE_FIELD but italic, in both bundled schemes. FUNCTION_DECLARATION,
+     * used previously, has no entry in the light scheme.
+     */
     val OBJECT_HEADER: TextAttributesKey =
-        createTextAttributesKey("GALEN_OBJECT_HEADER", Default.FUNCTION_DECLARATION)
+        createTextAttributesKey("GALEN_OBJECT_HEADER", Default.CONSTANT)
 
     val UNKNOWN_SPEC: TextAttributesKey =
         createTextAttributesKey("GALEN_UNKNOWN_SPEC", Default.IDENTIFIER)
@@ -50,8 +62,9 @@ object GalenColors {
         createTextAttributesKey("GALEN_CORRECTION", Default.METADATA)
 
     /** The `%` prefix that downgrades a failing spec to a warning. */
+    // LABEL has no foreground in either bundled scheme.
     val WARNING_PREFIX: TextAttributesKey =
-        createTextAttributesKey("GALEN_WARNING_PREFIX", Default.LABEL)
+        createTextAttributesKey("GALEN_WARNING_PREFIX", Default.METADATA)
 
     val COMMENT: TextAttributesKey =
         createTextAttributesKey("GALEN_COMMENT", Default.LINE_COMMENT)
@@ -109,8 +122,10 @@ object GalenColors {
      * Worth its own colour: these are the only object names that need no declaration, so seeing
      * one *not* highlighted is an immediate signal that a name is misspelled.
      */
+    // KEYWORD rather than PREDEFINED_SYMBOL, which carries no foreground in either bundled
+    // scheme. These are language built-ins needing no declaration, like `this` in Java.
     val SPECIAL_OBJECT: TextAttributesKey =
-        createTextAttributesKey("GALEN_SPECIAL_OBJECT", Default.PREDEFINED_SYMBOL)
+        createTextAttributesKey("GALEN_SPECIAL_OBJECT", Default.KEYWORD)
 
     /** The `width` / `height` tail of a relative range. */
     val PROPERTY_NAME: TextAttributesKey =

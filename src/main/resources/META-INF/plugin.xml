@@ -16,6 +16,13 @@
 
     <depends>com.intellij.modules.platform</depends>
 
+    <!--
+      Optional: when a JavaScript plugin is installed (IntelliJ IDEA Ultimate, WebStorm), Galen's
+      embedded JavaScript is injected and gets real JS highlighting, completion and inspections.
+      IDEA Community bundles no JavaScript support, where this simply does not load.
+    -->
+    <depends optional="true" config-file="galen-withJavaScript.xml">JavaScript</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <fileType
             name="Galen Spec"
@@ -27,6 +34,11 @@
         <lang.parserDefinition
             language="Galen"
             implementationClass="com.galenlinter.lang.GalenParserDefinition"/>
+
+        <!-- Supplies the PSI class for the ${...} token so it can host a language injection. -->
+        <lang.ast.factory
+            language="Galen"
+            implementationClass="com.galenlinter.psi.GalenAstFactory"/>
 
         <lang.syntaxHighlighterFactory
             language="Galen"
@@ -68,6 +80,10 @@
         <!-- Object-name -> declaring file, so navigation and completion stay flat as the
              project grows and work for files that are not open. -->
         <fileBasedIndex implementation="com.galenlinter.index.GalenObjectIndex"/>
+
+        <!-- A wildcard family is used through its concrete members, which share no searchable
+             text with the declaration, so the default text-driven search cannot find them. -->
+        <referencesSearch implementation="com.galenlinter.resolve.GalenWildcardReferencesSearcher"/>
 
         <!-- Required for rename: PsiReferenceBase delegates writing new text to a manipulator. -->
         <lang.elementManipulator

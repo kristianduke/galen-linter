@@ -5,6 +5,36 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0]
+
+### Added
+
+- **Optional JavaScript support.** When a JavaScript plugin is installed (IntelliJ IDEA Ultimate,
+  WebStorm), Galen's embedded JavaScript is injected and gets real JS highlighting, completion and
+  inspections — both `${...}` expressions and `@script` blocks, the latter injected as a single
+  fragment so a function spanning several lines is analysed as one piece. Declared as an optional
+  dependency, so IDEA Community, which bundles no JavaScript support, is unaffected.
+
+### Fixed
+
+- **Find Usages now finds the members of a wildcard family.** A family declared `row-value-*` is
+  used through `row-value-1`, `row-value-2` and so on, which share no searchable text with the
+  declaration — so the platform's text-driven search returned nothing, even though every one of
+  those references resolves to it. Resolution and navigation were always correct; only the search
+  was blind.
+- **Section headers `= Like This =` are coloured.** They fell back to `CLASS_NAME`, which has no
+  entry at all in the bundled colour schemes and therefore renders as plain text.
+- Three further colours had the same defect and were silently invisible: special objects
+  (`screen`, `viewport`), the `%` warning prefix, and — in the light scheme only — object statement
+  headers. All now use keys the bundled schemes actually paint.
+
+### Notes
+
+- A test now asks the real colour scheme whether every Galen colour key resolves to something
+  visible, so this class of bug cannot recur unnoticed. It is invisible to every other kind of
+  test: the element is parsed, annotated and "coloured", just with nothing to show for it.
+- Test suite grew from 193 to 211.
+
 ## [0.5.0]
 
 ### Added
@@ -189,7 +219,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/kristianduke/galen-linter/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/kristianduke/galen-linter/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/kristianduke/galen-linter/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kristianduke/galen-linter/compare/v0.2.0...v0.3.0

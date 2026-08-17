@@ -9,6 +9,7 @@ import com.galenlinter.psi.GalenObjectDefinition
 import com.galenlinter.psi.GalenObjectName
 import com.galenlinter.psi.GalenObjectNameRef
 import com.galenlinter.psi.GalenPsiElement
+import com.galenlinter.psi.GalenRawJsLine
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -61,6 +62,8 @@ class GalenParserDefinition : ParserDefinition {
         GalenTypes.OBJECT_NAME_REF -> GalenObjectNameRef(node)
         GalenTypes.GROUP_REF -> GalenGroupRef(node)
         GalenTypes.FILE_PATH_REF -> GalenFilePathRef(node)
+        // A raw JavaScript line can host a language injection when a JS plugin is present.
+        GalenTypes.RAW_JS_LINE -> GalenRawJsLine(node)
         else -> GalenPsiElement(node)
     }
 

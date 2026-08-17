@@ -1,0 +1,11 @@
+<idea-plugin>
+    <!--
+      Loaded only when a JavaScript plugin is present, via the optional <depends> in plugin.xml.
+      IntelliJ IDEA Community bundles no JavaScript support, so in Community this file is simply
+      never applied and Galen specs behave exactly as before.
+    -->
+    <extensions defaultExtensionNs="com.intellij">
+        <multiHostInjector
+            implementation="com.galenlinter.injection.GalenJavaScriptInjector"/>
+    </extensions>
+</idea-plugin>
