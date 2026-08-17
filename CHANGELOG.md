@@ -5,6 +5,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.8.0]
+
+Navigation and presentation. Galen nests by indentation with no closing delimiters, so once a block
+runs past a screenful nothing on screen says where you are — most of this addresses that.
+
+### Added
+
+- **Go to Symbol** (Ctrl+Alt+Shift+N) over every object in the project, answered from the existing
+  declaration index, so names are enumerated without opening or parsing anything.
+- **Structure view** — an outline of sections, `@objects` entries, object statements, rules and
+  control flow. Spec lines are deliberately omitted; they would swamp it.
+- **Breadcrumbs** showing the enclosing blocks, e.g. `= Main section = › hero-header: › width 100px`.
+- **Colour swatches** in the gutter for `color-scheme` values, editable with the colour picker.
+  Named colours and both 3- and 6-digit hex are recognised.
+- **Image preview on hover** for `image file` samples. For a framework whose purpose is comparing
+  rendered pixels against a reference, seeing the reference is the whole question.
+
+### Notes
+
+- A gradient such as `#000-#555-#955` gets no swatch: it is several colours in one token, with no
+  single value to show or set, and representing it by its first stop would be misleading.
+- Test suite grew from 228 to 240.
+
 ## [0.7.0]
 
 ### Added
@@ -248,7 +271,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/kristianduke/galen-linter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/kristianduke/galen-linter/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/kristianduke/galen-linter/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/kristianduke/galen-linter/compare/v0.4.0...v0.5.0

@@ -82,6 +82,20 @@
             language="Galen"
             implementationClass="com.galenlinter.documentation.GalenDocumentationProvider"/>
 
+        <!-- Navigation and presentation -->
+        <gotoSymbolContributor
+            implementation="com.galenlinter.navigation.GalenGotoSymbolContributor"/>
+
+        <lang.psiStructureViewFactory
+            language="Galen"
+            implementationClass="com.galenlinter.navigation.GalenStructureViewFactory"/>
+
+        <breadcrumbsInfoProvider
+            implementation="com.galenlinter.navigation.GalenBreadcrumbsProvider"/>
+
+        <colorProvider
+            implementation="com.galenlinter.navigation.GalenColorProvider"/>
+
         <!-- Object-name -> declaring file, so navigation and completion stay flat as the
              project grows and work for files that are not open. -->
         <fileBasedIndex implementation="com.galenlinter.index.GalenObjectIndex"/>

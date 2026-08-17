@@ -2,6 +2,7 @@ package com.galenlinter.documentation
 
 import com.galenlinter.lang.GalenTypes
 import com.galenlinter.psi.GalenFile
+import com.galenlinter.psi.GalenFilePathRef
 import com.galenlinter.psi.GalenObjectDefinition
 import com.galenlinter.psi.GalenObjectNameRef
 import com.galenlinter.resolve.GalenObjectResolver
@@ -40,12 +41,39 @@ class GalenDocumentationProvider : AbstractDocumentationProvider() {
 
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         val target = element ?: return null
-        if (target.containingFile !is GalenFile) return null
 
+        // A resolved file path lands here as the target file itself, not as a Galen element.
+        if (target is PsiFile && target !is GalenFile) return renderFile(target)
+
+        if (target.containingFile !is GalenFile) return null
         if (target is GalenObjectDefinition) return renderObject(target)
 
         val doc = docFor(target) ?: return null
         return render(doc)
+    }
+
+    /**
+     * Preview for a referenced file.
+     *
+     * For an `image file` sample this shows the image itself — for a framework whose entire purpose
+     * is comparing rendered pixels against a reference, seeing the reference is the whole question.
+     */
+    private fun renderFile(file: PsiFile): String? {
+        val virtualFile = file.virtualFile ?: return null
+        val extension = virtualFile.extension?.lowercase() ?: return null
+        if (extension !in IMAGE_EXTENSIONS) return null
+
+        return buildString {
+            append(DocumentationMarkup.DEFINITION_START)
+            append(escape(virtualFile.name))
+            append(DocumentationMarkup.DEFINITION_END)
+            append(DocumentationMarkup.CONTENT_START)
+            append("<img src=\"${virtualFile.url}\" alt=\"${escape(virtualFile.name)}\"/>")
+            append(DocumentationMarkup.CONTENT_END)
+            append(DocumentationMarkup.SECTIONS_START)
+            section(this, "Size", "${virtualFile.length} bytes")
+            append(DocumentationMarkup.SECTIONS_END)
+        }
     }
 
     /** The one-line summary shown in the completion popup and on Ctrl+hover. */
@@ -73,6 +101,10 @@ class GalenDocumentationProvider : AbstractDocumentationProvider() {
             if (docFor(current) != null) return current
             if (current is GalenObjectNameRef) return resolveObject(current) ?: current
             if (current is GalenObjectDefinition) return current
+            // Hovering a path shows the file it points at — an image sample shows the image.
+            if (current is GalenFilePathRef) {
+                current.references.lastOrNull()?.resolve()?.let { return it }
+            }
             current = current.parent
             depth++
         }
@@ -172,4 +204,8 @@ class GalenDocumentationProvider : AbstractDocumentationProvider() {
 
     private fun escape(text: String): String =
         text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    private companion object {
+        val IMAGE_EXTENSIONS = setOf("png", "jpg", "jpeg", "gif", "bmp", "webp")
+    }
 }
