@@ -15,6 +15,10 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 
+/** A "change to 'X'" fix, or none when nothing was close enough to suggest. */
+internal fun fixFor(suggestion: String?): Array<com.intellij.codeInspection.LocalQuickFix> =
+    if (suggestion == null) emptyArray() else arrayOf(GalenReplaceWordFix(suggestion))
+
 /** Visits the two elements every spec rule cares about, in Galen files only. */
 abstract class GalenSpecInspection : LocalInspectionTool() {
 
@@ -51,7 +55,11 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
         if (name !in GalenTypes.SPEC_NAMES && !isDynamic(name)) {
             val suggestion = closestMatch(name, GalenTypes.SPEC_NAMES)
             val hint = if (suggestion != null) " Did you mean '$suggestion'?" else ""
-            holder.registerProblem(nameElement, "GL301: Unknown spec '$name'.$hint")
+            holder.registerProblem(
+                nameElement,
+                "GL301: Unknown spec '$name'.$hint",
+                *fixFor(suggestion),
+            )
             return
         }
 
@@ -65,6 +73,7 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
                 holder.registerProblem(
                     side,
                     "GL319: '$text' is not a side. Galen accepts only left, right, top and bottom.$hint",
+                    *fixFor(suggestion),
                 )
             }
         }
@@ -101,6 +110,7 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             holder.registerProblem(
                 direction,
                 "GL320: '$directionText' is not an alignment direction. Use horizontally or vertically.$hint",
+                *fixFor(suggestion),
             )
             return
         }
@@ -119,6 +129,10 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             holder.registerProblem(
                 edge,
                 "GL302: Incorrect side for $directionText alignment: ${edge.text.uppercase()}. Valid edges: $valid.",
+                // Every edge legal for this direction is offered, since which one was meant is
+                // genuinely ambiguous.
+                *GalenTypes.alignEdgesFor(directionText).sorted()
+                    .map { GalenReplaceWordFix(it) }.toTypedArray(),
             )
         }
     }
@@ -270,6 +284,7 @@ class GalenSuspiciousSpecInspection : GalenSpecInspection() {
             holder.registerProblem(
                 operation,
                 "GL306: '$text' is not a known text operation, so it has no effect.$hint",
+                *fixFor(suggestion),
             )
         }
     }
@@ -304,6 +319,7 @@ class GalenSuspiciousSpecInspection : GalenSpecInspection() {
             holder.registerProblem(
                 property,
                 "GL315: '$text' is not a relative property; Galen only resolves width and height.$hint",
+                *fixFor(suggestion),
             )
         }
     }
@@ -324,7 +340,7 @@ class GalenSuspiciousSpecInspection : GalenSpecInspection() {
             if (text in GalenTypes.IMAGE_OPTIONS || isDynamic(text)) continue
             val suggestion = closestMatch(text, GalenTypes.IMAGE_OPTIONS)
             val hint = if (suggestion != null) " Did you mean '$suggestion'?" else ""
-            holder.registerProblem(option, "GL313: Unknown image option '$text'.$hint")
+            holder.registerProblem(option, "GL313: Unknown image option '$text'.$hint", *fixFor(suggestion))
         }
 
         for (filter in descendantsOfType(args, GalenTypes.IMAGE_FILTER)) {
@@ -334,7 +350,7 @@ class GalenSuspiciousSpecInspection : GalenSpecInspection() {
             if (text !in GalenTypes.IMAGE_FILTERS) {
                 val suggestion = closestMatch(text, GalenTypes.IMAGE_FILTERS)
                 val hint = if (suggestion != null) " Did you mean '$suggestion'?" else ""
-                holder.registerProblem(filter, "GL313: Unknown image filter '$text'.$hint")
+                holder.registerProblem(filter, "GL313: Unknown image filter '$text'.$hint", *fixFor(suggestion))
                 continue
             }
 

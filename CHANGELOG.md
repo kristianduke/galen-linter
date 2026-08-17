@@ -5,6 +5,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0]
+
+Completion and quick fixes, plus two fixes for issues reported from using 0.2.0.
+
+### Added
+
+- **Context-aware completion.** What is offered depends on the position in the line's grammar, not
+  just the word being typed:
+  - statement keywords at the start of a line, spec names at the start of a spec line;
+  - object names — from this file and everything it imports — wherever an object belongs, including
+    dotted nested names and the special objects;
+  - side keywords after a range, and nothing else, since nothing else is legal there;
+  - `aligned` offers only the edges valid for the direction already chosen, so
+    `aligned vertically` never suggests `top`;
+  - matchers and text operations for `text`/`ocr`/`css`, filters for `count`, options and filters
+    for `image`, locator types inside `@objects`, and group names after `&`.
+- **Quick fixes.** Every "did you mean" suggestion is now applicable:
+  - correct a misspelled spec name, side, text operation, relative property, image option or filter;
+  - swap an alignment edge for one valid in that direction — all of them are offered, since which
+    was meant is genuinely ambiguous;
+  - correct an object or group name to a similar one in scope;
+  - **add the missing `@import`** when the object is declared in a file this spec does not import,
+    inserted after any existing imports;
+  - remove trailing whitespace, add a final newline, normalise mixed indentation.
+
 ### Fixed
 
 - **A collapsed block no longer repeats its header.** The fold region started *after* the header
@@ -19,6 +44,11 @@ All notable changes to this project are documented here. The format follows
   with an ordinary object reference, so it is now told apart by position and given its own
   "Object statement header" colour. (Headers were uncoloured entirely before 0.3.0, which changed
   their element type.)
+
+### Notes
+
+- Colour choices are all configurable under Editor | Color Scheme | Galen Spec, now 30 named keys.
+- Test suite grew from 118 to 161.
 
 ## [0.3.0]
 
@@ -128,7 +158,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/kristianduke/galen-linter/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kristianduke/galen-linter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kristianduke/galen-linter/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kristianduke/galen-linter/releases/tag/v0.1.0

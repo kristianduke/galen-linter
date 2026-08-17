@@ -1,10 +1,12 @@
 package com.galenlinter.inspections
 
+import com.galenlinter.inspections.SpecPsiUtil.closestMatch
 import com.galenlinter.lang.GalenTypes
 import com.galenlinter.psi.GalenFile
 import com.galenlinter.psi.GalenFilePathRef
 import com.galenlinter.psi.GalenGroupRef
 import com.galenlinter.psi.GalenObjectNameRef
+import com.galenlinter.resolve.GalenGroupUtil
 import com.galenlinter.resolve.GalenObjectResolver
 import com.galenlinter.resolve.Resolution
 import com.intellij.codeInspection.LocalInspectionTool
@@ -47,13 +49,26 @@ class GalenUnresolvedReferenceInspection : LocalInspectionTool() {
             is Resolution.Found, Resolution.Builtin, Resolution.Dynamic -> return
             is Resolution.NotFound -> {
                 // The most useful thing to say is not "unknown" but "you forgot to import it".
-                val message = if (resolution.declaredElsewhere != null) {
-                    "GL201: Object '$name' is declared in ${resolution.declaredElsewhere} but that " +
-                        "file is not imported here. Add '@import ${resolution.declaredElsewhere}'."
+                if (resolution.declaredElsewhere != null) {
+                    holder.registerProblem(
+                        element,
+                        "GL201: Object '$name' is declared in ${resolution.declaredElsewhere} but that " +
+                            "file is not imported here.",
+                        GalenAddImportFix(resolution.declaredElsewhere),
+                    )
                 } else {
-                    "GL201: Object '$name' is not declared in this file or anything it imports."
+                    val suggestion = closestMatch(
+                        name,
+                        GalenObjectResolver.declarationsInScope(element.containingFile)
+                            .mapNotNull { it.qualifiedName },
+                    )
+                    val hint = if (suggestion != null) " Did you mean '$suggestion'?" else ""
+                    holder.registerProblem(
+                        element,
+                        "GL201: Object '$name' is not declared in this file or anything it imports.$hint",
+                        *fixFor(suggestion),
+                    )
                 }
-                holder.registerProblem(element, message)
             }
         }
     }
@@ -62,9 +77,12 @@ class GalenUnresolvedReferenceInspection : LocalInspectionTool() {
         val name = element.groupName
         if (name.isEmpty() || name.contains("\${")) return
         if (element.reference?.resolve() != null) return
+        val suggestion = closestMatch(name, GalenGroupUtil.namesInScope(element.containingFile))
+        val hint = if (suggestion != null) " Did you mean '$suggestion'?" else ""
         holder.registerProblem(
             element,
-            "GL202: Object group '$name' is not declared in a '@groups' block or by '@grouped(...)'.",
+            "GL202: Object group '$name' is not declared in a '@groups' block or by '@grouped(...)'.$hint",
+            *fixFor(suggestion?.let { "&$it" }),
         )
     }
 }

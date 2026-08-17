@@ -25,6 +25,11 @@ edit time.
   Wildcard families resolve: `menu_item-3` finds its `menu_item-*` declaration. File paths in
   `@import`, `component`, `image file` and friends are clickable, and `${...}` variables navigate
   to their `@set` entry, loop binding or rule parameter.
+- **Completion** that knows where you are: spec names inside an object statement, object names
+  (including from imported files) where an object belongs, side keywords after a range, and only
+  the alignment edges valid for the direction you chose.
+- **Quick fixes** for every suggestion — correct a misspelled keyword or object name, swap an
+  invalid alignment edge, and add the `@import` that a referenced object needs.
 - **Inspections** for the mistakes the language makes easy to hide:
 
   | Rule | Reports |
@@ -80,7 +85,7 @@ Requires JDK 21.
 descriptor, the archive name and `updatePlugins.xml` are all derived from it.
 
 1. Bump `pluginVersion` in `gradle.properties` and add a `CHANGELOG.md` entry.
-2. Commit, then tag: `git tag v0.2.0 && git push origin v0.2.0`.
+2. Commit, then tag: `git tag v0.4.1 && git push origin v0.4.1`.
 
 The tag triggers [`release.yml`](.github/workflows/release.yml), which builds the plugin and
 publishes a GitHub release carrying the zip and an `updatePlugins.xml` whose download URL points

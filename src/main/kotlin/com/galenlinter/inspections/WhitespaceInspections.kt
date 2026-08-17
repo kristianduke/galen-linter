@@ -22,6 +22,9 @@ class GL001MixedIndentationInspection : GalenFileInspection() {
                     TextRange(line.start, line.start + indent.length),
                     "GL001: Indentation mixes tabs and spaces. Galen counts a tab as 4 columns; " +
                         "editors may render it differently.",
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                    // Normalise to what Galen actually computes: a tab is exactly 4 columns.
+                    GalenReplaceRangeFix(" ".repeat(line.indentWidth), "Convert indentation to spaces"),
                 )
             }
         }
@@ -89,6 +92,7 @@ class GL003TrailingWhitespaceInspection : GalenFileInspection() {
                 TextRange(line.start + trimmedLength, line.end),
                 "GL003: Trailing whitespace.",
                 ProblemHighlightType.WEAK_WARNING,
+                GalenReplaceRangeFix("", "Remove trailing whitespace"),
             )
         }
     }
@@ -103,6 +107,7 @@ class GL006MissingFinalNewlineInspection : GalenFileInspection() {
             TextRange(maxOf(0, text.length - 1), text.length),
             "GL006: File does not end with a newline.",
             ProblemHighlightType.WEAK_WARNING,
+            GalenAddFinalNewlineFix(),
         )
     }
 }

@@ -3,6 +3,7 @@ package com.galenlinter.inspections
 import com.galenlinter.psi.GalenFile
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
@@ -54,9 +55,10 @@ abstract class GalenFileInspection : LocalInspectionTool() {
             range: TextRange,
             message: String,
             type: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+            vararg fixes: LocalQuickFix,
         ) {
             if (range.startOffset >= range.endOffset) return
-            sink += manager.createProblemDescriptor(file, range, message, type, onTheFly)
+            sink += manager.createProblemDescriptor(file, range, message, type, onTheFly, *fixes)
         }
     }
 

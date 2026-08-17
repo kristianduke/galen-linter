@@ -51,6 +51,10 @@
             language="Galen"
             implementationClass="com.galenlinter.lang.GalenFindUsagesProvider"/>
 
+        <completion.contributor
+            language="Galen"
+            implementationClass="com.galenlinter.completion.GalenCompletionContributor"/>
+
         <!-- Object-name -> declaring file, so navigation and completion stay flat as the
              project grows and work for files that are not open. -->
         <fileBasedIndex implementation="com.galenlinter.index.GalenObjectIndex"/>
