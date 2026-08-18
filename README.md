@@ -25,6 +25,8 @@ edit time.
   Wildcard families resolve: `menu_item-3` finds its `menu_item-*` declaration. File paths in
   `@import`, `component`, `image file` and friends are clickable, and `${...}` variables navigate
   to their `@set` entry, loop binding or rule parameter.
+- **Reformat Code** that normalises indentation and aligns `@objects` locator columns — and is
+  tested never to change a file's parse structure, since indentation is the syntax.
 - **Finding your way around.** Go to Symbol over every object, a structure view outlining the
   file, breadcrumbs for the enclosing blocks, colour swatches on `color-scheme` values, and an
   image preview when you hover an `image file` sample.

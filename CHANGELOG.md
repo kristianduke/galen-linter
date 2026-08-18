@@ -5,6 +5,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.10.0]
+
+### Added
+
+- **Reformat Code.** Indentation is normalised to a consistent step, and locator columns inside an
+  `@objects` block are lined up the way they are written by hand.
+- Code style settings for Galen, defaulting to four spaces — what every example in Galen's own
+  documentation uses, and the width Galen itself assigns to a tab.
+
+### Notes
+
+- **Indentation is the syntax here**, so a formatter that gets a level wrong does not misalign a
+  file, it changes what the file means. The indent of each line is therefore reproduced from the
+  depth the parser already assigned it, never re-derived from the text. A property test asserts
+  that reformatting leaves the parse structure byte-identical across every test fixture and every
+  example in the reference documentation.
+- The platform's own formatter cannot do this job: it rewrites whitespace between blocks, and
+  Galen's indentation is a token the parser depends on rather than whitespace. The work is done by
+  a post-format processor instead.
+- `@script` bodies are left alone. That indentation is JavaScript's, and the author's to arrange;
+  Galen only requires it to be deeper than the `@script` line.
+- Test suite grew from 258 to 268.
+
 ## [0.9.0]
 
 Custom rules were the last substantial part of the language with no checking at all. An invocation
@@ -301,7 +324,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/kristianduke/galen-linter/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/kristianduke/galen-linter/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/kristianduke/galen-linter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/kristianduke/galen-linter/compare/v0.6.0...v0.7.0

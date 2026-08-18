@@ -74,6 +74,18 @@
             language="Galen"
             implementationClass="com.galenlinter.lang.GalenNamesValidator"/>
 
+        <!-- Reformat Code. The indent itself is applied by the post-format processor, because
+             Galen's indentation is a parser token rather than whitespace. -->
+        <lang.formatter
+            language="Galen"
+            implementationClass="com.galenlinter.formatting.GalenFormattingModelBuilder"/>
+
+        <postFormatProcessor
+            implementation="com.galenlinter.formatting.GalenPostFormatProcessor"/>
+
+        <langCodeStyleSettingsProvider
+            implementation="com.galenlinter.formatting.GalenCodeStyleSettingsProvider"/>
+
         <completion.contributor
             language="Galen"
             implementationClass="com.galenlinter.completion.GalenCompletionContributor"/>
