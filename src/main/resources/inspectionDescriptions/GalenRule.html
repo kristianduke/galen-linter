@@ -1,0 +1,31 @@
+<html>
+<body>
+Reports problems with custom rules &mdash; <code>@rule</code> declarations and the
+<code>|</code> invocations that use them.
+<p>
+    Rules are how a spec suite is factored, and nothing else checks them: an invocation that matches
+    no rule simply does nothing, silently, and a rule's text can drift away from its call sites with
+    no signal at all.
+</p>
+<ul>
+    <li><b>GL601</b> &mdash; an invocation matching more than one rule. Galen picks one, and which
+        is not visible from the spec. Easy to cause by accident, because an undecorated
+        <code>%{param}</code> matches <code>.*</code>.</li>
+    <li><b>GL602</b> &mdash; an invocation matching no rule, so the line does nothing. The message
+        names the closest declared rule when there is one.</li>
+    <li><b>GL603</b> &mdash; <code>@ruleBody</code> outside a <code>@rule</code> declaration.</li>
+    <li><b>GL604</b> &mdash; an invocation with an indented block beneath it, where the rule never
+        invokes <code>@ruleBody</code>, so the block is silently ignored.</li>
+    <li><b>GL606</b> &mdash; a <code>%{name: regex}</code> capture whose regular expression does not
+        compile, making the parameter unmatchable.</li>
+    <li><b>GL607</b> &mdash; a rule body using a <code>${...}</code> the rule does not declare.
+        <code>objectName</code>, <code>@set</code> variables, enclosing loop bindings and Galen's
+        JavaScript API are all accepted.</li>
+</ul>
+<p>
+    Rules declared in JavaScript files loaded with <code>@script</code> are found too, by scanning
+    them for <code>rule("...")</code> calls &mdash; without that, every invocation of a
+    JavaScript-defined rule would be reported as matching nothing.
+</p>
+</body>
+</html>

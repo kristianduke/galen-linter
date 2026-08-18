@@ -49,6 +49,8 @@ edit time.
   | GL101 / GL103 / GL104 / GL105 / GL107 / GL109 | Unknown `@` statement, dangling `@elseif`/`@else`, inconsistent sibling indentation, missing `:`, unclosed section header, malformed object definition |
   | GL201 / GL202 / GL501 | Unresolved object, unresolved group, missing file |
   | GL301 / GL302 / GL303 / GL309 / GL318 / GL319 / GL320 / GL322 / GL323 | Spec arguments Galen itself rejects — unknown spec, bad `aligned` direction or edge, `absent` contradicting a positional spec, `count` with a unit, `near` without a side, an invalid side, `on` without `edge`, a corner combining opposite sides |
+  | GL601 / GL602 / GL603 / GL604 / GL606 / GL607 | Custom rules — an ambiguous invocation, one matching no rule, `@ruleBody` outside a rule, a body the rule ignores, an invalid capture regex, an undeclared parameter |
+  | GL701 / GL702 / GL703 / GL704 | Embedded JavaScript — `.name()` called as a method, unterminated string, near-miss of a Galen API name, unbalanced bracket |
   | GL305 / GL306 / GL310 / GL311 / GL312 / GL313 / GL315 / GL316 | Things Galen tolerates but you probably did not mean — an invalid Java regex, an unknown text operation, a bad contrast level, `denoise` outside `map-filter`, an `image` with no sample, unknown image options, an unknown relative property, a duplicated spec |
 
   Most carry a "did you mean" suggestion. Anything supplied by a `${...}` expression is never

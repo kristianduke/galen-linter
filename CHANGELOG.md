@@ -5,6 +5,36 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.9.0]
+
+Custom rules were the last substantial part of the language with no checking at all. An invocation
+matching no rule simply does nothing, silently, and a rule's text can drift away from its call sites
+with no signal.
+
+### Added
+
+- **GL601** an invocation matching more than one rule. Galen picks one and the spec cannot show
+  which; an undecorated `%{param}` matches `.*`, so this is easy to cause by accident.
+- **GL602** an invocation matching no rule. Names the closest declared rule when there is one.
+- **GL603** `@ruleBody` outside a `@rule` declaration.
+- **GL604** an invocation with an indented block whose rule never invokes `@ruleBody`, so the block
+  is silently ignored.
+- **GL606** a `%{name: regex}` capture whose regular expression does not compile.
+- **GL607** a rule body using a `${...}` the rule does not declare.
+
+### Notes
+
+- Rules are collected from the file, its transitive `@import`s, **and** JavaScript files loaded with
+  `@script`, by scanning them for `rule("...")`. Without the last of those, every invocation of a
+  JavaScript-defined rule would be reported as matching nothing — unusable in exactly the projects
+  that lean on rules most.
+- GL607 ignores anything being *called*, which covers Galen's API and any function a `@script` file
+  defines without needing to enumerate them. `objectName`, `@set` variables and loop bindings are
+  accepted too.
+- Rule text is compiled to a pattern with literal parts escaped, so regex metacharacters occurring
+  naturally in rule wording cannot change what it matches.
+- Test suite grew from 240 to 258.
+
 ## [0.8.0]
 
 Navigation and presentation. Galen nests by indentation with no closing delimiters, so once a block
@@ -271,7 +301,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/kristianduke/galen-linter/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/kristianduke/galen-linter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/kristianduke/galen-linter/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/kristianduke/galen-linter/compare/v0.5.0...v0.6.0

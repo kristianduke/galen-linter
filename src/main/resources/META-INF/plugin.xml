@@ -119,6 +119,15 @@
 
         <localInspection
             language="Galen"
+            shortName="GalenRule"
+            displayName="Problems with custom rules"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.galenlinter.inspections.GalenRuleInspection"/>
+
+        <localInspection
+            language="Galen"
             shortName="GalenJs"
             displayName="Problems in embedded JavaScript"
             groupName="Galen"
