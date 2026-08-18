@@ -1,0 +1,10 @@
+<html>
+<body>
+Reports a string literal with no closing quote.
+<p>
+    The lexer stops an unterminated string at the end of its line rather than swallowing the rest of
+    the file, which keeps the following lines parsing correctly. The side effect is that nothing
+    else notices: <code>text is "comprehensive</code> looks entirely ordinary until the run fails.
+</p>
+</body>
+</html>

@@ -83,7 +83,127 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             "near" -> checkNearSides(specLine, args, holder)
             "on" -> checkOn(specLine, args, holder)
             "count" -> checkCount(args, holder)
+            "absent", "visible" -> checkTakesNoArguments(specLine, args, name, holder)
         }
+
+        if (name in UNIT_REQUIRED) checkRanges(specLine, args, name, holder)
+    }
+
+    /**
+     * GL324 — a spec that takes no arguments was given some.
+     *
+     * `visible matches 10px` parses, because the arguments simply go unread, and then means only
+     * `visible` at run time. The matcher is silently discarded.
+     */
+    private fun checkTakesNoArguments(
+        specLine: PsiElement,
+        args: PsiElement?,
+        name: String,
+        holder: ProblemsHolder,
+    ) {
+        if (args == null) return
+        val extra = meaningfulTokens(args)
+        if (extra.isEmpty()) return
+
+        val text = extra.joinToString(" ") { it.text }
+        holder.registerProblem(
+            args,
+            "GL324: '$name' takes no arguments, so '$text' is ignored.",
+        )
+    }
+
+    /**
+     * GL304 — the range grammar.
+     *
+     * Three shapes come up repeatedly and all of them parse into something Galen then rejects or
+     * misreads:
+     *  - `height is 400 to 800px` — a matcher where a range belongs;
+     *  - `width 154 to 164p` — a mistyped unit, which leaves the range with no unit at all;
+     *  - `height 400px to 800px` — a unit on the first bound, so the range ends after `400px` and
+     *    the rest of the line is left over.
+     */
+    private fun checkRanges(
+        specLine: PsiElement,
+        args: PsiElement?,
+        name: String,
+        holder: ProblemsHolder,
+    ) {
+        if (args == null) {
+            if (name in RANGE_REQUIRED) {
+                holder.registerProblem(specLine, "GL304: '$name' requires a range, e.g. '$name 100px'.")
+            }
+            return
+        }
+
+        val ranges = descendantsOfType(args, GalenTypes.RANGE)
+        val loose = meaningfulTokens(args)
+
+        // A matcher standing where the range should be.
+        val matcher = loose.firstOrNull { it.text in GalenTypes.MATCHERS }
+        if (matcher != null && name in RANGE_REQUIRED) {
+            holder.registerProblem(
+                matcher,
+                "GL304: '$name' takes a range directly, with no '${matcher.text}'. " +
+                    "Write '$name 400 to 800px'.",
+                GalenReplaceRangeFix("", "Remove '${matcher.text}'"),
+            )
+            return
+        }
+
+        if (ranges.isEmpty()) {
+            if (name in RANGE_REQUIRED) {
+                holder.registerProblem(specLine, "GL304: '$name' requires a range, e.g. '$name 100px'.")
+            }
+            return
+        }
+
+        // `to` outside a range means the range ended early — the unit was put on the first bound.
+        val strayTo = loose.firstOrNull { it.text == "to" }
+        if (strayTo != null) {
+            holder.registerProblem(
+                strayTo,
+                "GL304: Only the last bound of a range carries the unit. " +
+                    "Write '400 to 800px', not '400px to 800px'.",
+            )
+            return
+        }
+
+        for (range in ranges) {
+            if (isDynamic(range.text)) continue
+            if (descendantsOfType(range, GalenTypes.UNIT).isNotEmpty()) continue
+
+            // The token straight after the range is usually the mistyped unit.
+            val suspect = loose.firstOrNull { it.textRange.startOffset >= range.textRange.endOffset }
+            val suggestion = suspect?.text?.takeIf { closestMatch(it, UNITS) != null }
+
+            if (suggestion != null) {
+                holder.registerProblem(
+                    suspect,
+                    "GL304: '$suggestion' is not a unit. Galen accepts 'px' and '%'.",
+                    GalenReplaceRangeFix("px", "Change to 'px'"),
+                )
+            } else {
+                holder.registerProblem(
+                    range,
+                    "GL304: This range has no unit. Galen accepts 'px' and '%', " +
+                        "e.g. '${range.text.trim()}px'.",
+                )
+            }
+        }
+    }
+
+    /** Direct-child tokens of the arguments that carry meaning, i.e. not punctuation or space. */
+    private fun meaningfulTokens(args: PsiElement): List<PsiElement> {
+        val result = mutableListOf<PsiElement>()
+        var child = args.firstChild
+        while (child != null) {
+            val type = child.node?.elementType
+            if (type == GalenTypes.WORD || type == GalenTypes.NUMBER || type == GalenTypes.STRING) {
+                result += child
+            }
+            child = child.nextSibling
+        }
+        return result
     }
 
     /**
@@ -230,6 +350,16 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
         const val NEAR_SIDES_MESSAGE =
             "GL318: 'near' requires at least one side after the range " +
                 "(left, right, top or bottom). Galen rejects a bare distance."
+
+        val UNITS = setOf("px", "%")
+
+        /** Specs whose ranges must carry a unit. `count` is excluded: its range never has one. */
+        val UNIT_REQUIRED = setOf(
+            "width", "height", "above", "below", "left-of", "right-of", "near", "inside", "on",
+        )
+
+        /** Specs that cannot work without a range at all. */
+        val RANGE_REQUIRED = setOf("width", "height", "above", "below", "left-of", "right-of")
 
         val REQUIRES_VISIBILITY = setOf(
             "near", "inside", "on", "above", "below", "left-of", "right-of",

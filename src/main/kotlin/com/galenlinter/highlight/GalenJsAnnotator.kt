@@ -56,7 +56,7 @@ class GalenJsAnnotator : Annotator {
         GalenJsLexer.Kind.NUMBER -> GalenColors.JS_NUMBER
         GalenJsLexer.Kind.KEYWORD -> GalenColors.JS_KEYWORD
         GalenJsLexer.Kind.GALEN_API -> GalenColors.JS_GALEN_API
-        // Plain identifiers and punctuation keep the expression's own colour.
-        GalenJsLexer.Kind.IDENTIFIER, GalenJsLexer.Kind.PUNCTUATION -> null
+        GalenJsLexer.Kind.IDENTIFIER -> GalenColors.JS_IDENTIFIER
+        GalenJsLexer.Kind.PUNCTUATION -> GalenColors.JS_PUNCTUATION
     }
 }

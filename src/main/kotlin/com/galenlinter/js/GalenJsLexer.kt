@@ -29,6 +29,10 @@ object GalenJsLexer {
             override val message = "Unterminated string literal."
         }
 
+        data class UnterminatedComment(override val range: TextRange) : Problem {
+            override val message = "Unterminated block comment: no closing '*/'."
+        }
+
         data class UnbalancedBracket(override val range: TextRange, private val what: String) : Problem {
             override val message = what
         }
@@ -149,6 +153,14 @@ object GalenJsLexer {
             val closed = token.text.length > 1 && token.text.last() == quote &&
                 !token.text.endsWith("\\$quote")
             if (!closed) problems += Problem.UnterminatedString(token.range)
+        }
+
+        for (token in tokens) {
+            if (token.kind != Kind.COMMENT) continue
+            if (!token.text.startsWith("/*")) continue
+            if (!token.text.endsWith("*/") || token.text.length < 4) {
+                problems += Problem.UnterminatedComment(token.range)
+            }
         }
 
         problems += bracketProblems(tokens)

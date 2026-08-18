@@ -140,6 +140,8 @@ class GalenColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Embedded JavaScript//Number", GalenColors.JS_NUMBER),
             AttributesDescriptor("Embedded JavaScript//Comment", GalenColors.JS_COMMENT),
             AttributesDescriptor("Embedded JavaScript//Galen API function", GalenColors.JS_GALEN_API),
+            AttributesDescriptor("Embedded JavaScript//Identifier", GalenColors.JS_IDENTIFIER),
+            AttributesDescriptor("Embedded JavaScript//Punctuation", GalenColors.JS_PUNCTUATION),
         )
     }
 }

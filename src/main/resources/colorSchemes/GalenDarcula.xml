@@ -1,0 +1,49 @@
+<scheme name="Darcula" version="142" parent_scheme="Darcula">
+    <!--
+      A palette of its own for embedded JavaScript.
+
+      Borrowing Galen's colour keys made the two languages indistinguishable where they meet: JS
+      keywords came out the same orange as Galen spec names, JS strings the same green as locators,
+      and the API colour the same purple as object references. These hues are deliberately chosen
+      to sit outside Galen's — which uses cc7832 orange, bbb529 olive, 9876aa purple, 6897bb blue
+      and 6a8759 green — so a glance tells you which language you are looking at.
+    -->
+    <attributes>
+        <option name="GALEN_JS_KEYWORD">
+            <value>
+                <option name="FOREGROUND" value="4ec9b0"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_STRING">
+            <value>
+                <option name="FOREGROUND" value="d69d85"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_NUMBER">
+            <value>
+                <option name="FOREGROUND" value="b5cea8"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_COMMENT">
+            <value>
+                <option name="FOREGROUND" value="7f7f7f"/>
+                <option name="FONT_TYPE" value="2"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_API">
+            <value>
+                <option name="FOREGROUND" value="dcdcaa"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_PUNCTUATION">
+            <value>
+                <option name="FOREGROUND" value="a9b7c6"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_IDENTIFIER">
+            <value>
+                <option name="FOREGROUND" value="9cdcfe"/>
+            </value>
+        </option>
+    </attributes>
+</scheme>

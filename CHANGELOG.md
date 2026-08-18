@@ -5,6 +5,40 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.11.0]
+
+All from feedback on real use. Every one of these parsed cleanly before, which was the problem —
+Galen either rejects them at run time or, worse, quietly reads them as something else.
+
+### Added
+
+- **GL106** an unterminated string. `text is "comprehensive` looked entirely ordinary: the lexer
+  stops such a string at the end of its line so the following lines still parse, and nothing
+  noticed.
+- **GL304** the range grammar, covering three shapes that come up repeatedly:
+  - `height is 400 to 800px` — a matcher where a range belongs; these specs take the range directly;
+  - `width 154 to 164p` — a mistyped unit, which leaves the range with no unit at all, with a fix
+    to correct it;
+  - `height 400px to 800px` — a unit on the first bound, which ends the range early and strands the
+    rest of the line.
+- **GL324** arguments given to a spec that takes none. `visible matches 10px` runs as plain
+  `visible`, silently discarding the rest.
+- **GL702** now also covers an unterminated block comment in embedded JavaScript.
+
+### Changed
+
+- **Embedded JavaScript has its own colour palette.** Borrowing Galen's colour keys made the two
+  languages indistinguishable where they meet — JS keywords came out the same orange as Galen spec
+  names, JS strings the same green as locators, the API colour the same purple as object
+  references. The JavaScript palette is now defined per scheme, in hues chosen to sit outside
+  Galen's, and identifiers and punctuation are coloured too so the whole span reads as one language.
+
+### Notes
+
+- `count` ranges are exempt from the unit check: theirs never carry one.
+- Ranges supplied by `${...}` are exempt, as everywhere else.
+- Test suite grew from 268 to 284.
+
 ## [0.10.0]
 
 ### Added
@@ -324,7 +358,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/kristianduke/galen-linter/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/kristianduke/galen-linter/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/kristianduke/galen-linter/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/kristianduke/galen-linter/compare/v0.7.0...v0.8.0

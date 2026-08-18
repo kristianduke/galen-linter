@@ -60,6 +60,7 @@ class GalenJsInspection : LocalInspectionTool() {
     private fun ruleIdOf(problem: GalenJsLexer.Problem): String = when (problem) {
         is GalenJsLexer.Problem.NameCalledAsFunction -> "GL701"
         is GalenJsLexer.Problem.UnterminatedString -> "GL702"
+        is GalenJsLexer.Problem.UnterminatedComment -> "GL702"
         is GalenJsLexer.Problem.UnbalancedBracket -> "GL704"
         is GalenJsLexer.Problem.UnknownApi -> "GL703"
     }
@@ -67,6 +68,7 @@ class GalenJsInspection : LocalInspectionTool() {
     private fun severityOf(problem: GalenJsLexer.Problem): ProblemHighlightType = when (problem) {
         // These cannot run: the expression will not evaluate.
         is GalenJsLexer.Problem.UnterminatedString,
+        is GalenJsLexer.Problem.UnterminatedComment,
         is GalenJsLexer.Problem.UnbalancedBracket,
         -> ProblemHighlightType.GENERIC_ERROR
 

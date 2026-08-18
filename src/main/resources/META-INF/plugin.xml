@@ -56,6 +56,11 @@
         <colorSettingsPage
             implementation="com.galenlinter.highlight.GalenColorSettingsPage"/>
 
+        <!-- Embedded JavaScript gets a palette of its own, per scheme, so it is not confused with
+             the surrounding Galen. -->
+        <additionalTextAttributes scheme="Default" file="colorSchemes/GalenDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/GalenDarcula.xml"/>
+
         <lang.commenter
             language="Galen"
             implementationClass="com.galenlinter.lang.GalenCommenter"/>
@@ -128,6 +133,15 @@
         <lang.elementManipulator
             forClass="com.galenlinter.psi.GalenFilePathRef"
             implementationClass="com.galenlinter.resolve.GalenFilePathRefManipulator"/>
+
+        <localInspection
+            language="Galen"
+            shortName="GalenUnterminatedString"
+            displayName="Unterminated string literal"
+            groupName="Galen"
+            enabledByDefault="true"
+            level="ERROR"
+            implementationClass="com.galenlinter.inspections.GalenUnterminatedStringInspection"/>
 
         <localInspection
             language="Galen"

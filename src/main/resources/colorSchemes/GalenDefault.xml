@@ -1,0 +1,46 @@
+<scheme name="Default" version="142" parent_scheme="Default">
+    <!--
+      The light-theme counterpart. Galen uses 000080 navy, 808000 olive, 660e7a purple, 0000ff blue
+      and 008000 green here, so the JavaScript palette avoids all of those.
+    -->
+    <attributes>
+        <option name="GALEN_JS_KEYWORD">
+            <value>
+                <option name="FOREGROUND" value="007d7d"/>
+                <option name="FONT_TYPE" value="1"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_STRING">
+            <value>
+                <option name="FOREGROUND" value="a31515"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_NUMBER">
+            <value>
+                <option name="FOREGROUND" value="098658"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_COMMENT">
+            <value>
+                <option name="FOREGROUND" value="7f7f7f"/>
+                <option name="FONT_TYPE" value="2"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_API">
+            <value>
+                <option name="FOREGROUND" value="795e26"/>
+                <option name="FONT_TYPE" value="1"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_PUNCTUATION">
+            <value>
+                <option name="FOREGROUND" value="4a4a4a"/>
+            </value>
+        </option>
+        <option name="GALEN_JS_IDENTIFIER">
+            <value>
+                <option name="FOREGROUND" value="2b5f8a"/>
+            </value>
+        </option>
+    </attributes>
+</scheme>

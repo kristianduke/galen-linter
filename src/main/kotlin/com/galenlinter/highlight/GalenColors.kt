@@ -166,4 +166,10 @@ object GalenColors {
     /** `count`, `find`, `findAll`, `isVisible`, `isPresent`, `viewport`, `screen`. */
     val JS_GALEN_API: TextAttributesKey =
         createTextAttributesKey("GALEN_JS_API", Default.INSTANCE_FIELD)
+
+    val JS_IDENTIFIER: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_IDENTIFIER", Default.IDENTIFIER)
+
+    val JS_PUNCTUATION: TextAttributesKey =
+        createTextAttributesKey("GALEN_JS_PUNCTUATION", Default.OPERATION_SIGN)
 }
