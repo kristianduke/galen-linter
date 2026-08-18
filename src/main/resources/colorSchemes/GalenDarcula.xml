@@ -9,6 +9,19 @@
       and 6a8759 green — so a glance tells you which language you are looking at.
     -->
     <attributes>
+    <!-- Galen keys that would otherwise share ink with each other. A section header and a ${...} expression both resolved to METADATA, and an object statement header and an ordinary object reference both to the same purple, differing only by italics. -->
+        <option name="GALEN_SECTION">
+            <value>
+                <option name="FOREGROUND" value="c586c0"/>
+                <option name="FONT_TYPE" value="1"/>
+            </value>
+        </option>
+        <option name="GALEN_OBJECT_HEADER">
+            <value>
+                <option name="FOREGROUND" value="4fa3d1"/>
+                <option name="FONT_TYPE" value="1"/>
+            </value>
+        </option>
         <option name="GALEN_JS_KEYWORD">
             <value>
                 <option name="FOREGROUND" value="4ec9b0"/>

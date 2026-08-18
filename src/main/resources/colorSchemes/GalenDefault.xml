@@ -4,6 +4,19 @@
       and 008000 green here, so the JavaScript palette avoids all of those.
     -->
     <attributes>
+    <!-- Galen keys that would otherwise share ink with each other. A section header and a ${...} expression both resolved to METADATA, and an object statement header and an ordinary object reference both to the same purple, differing only by italics. -->
+        <option name="GALEN_SECTION">
+            <value>
+                <option name="FOREGROUND" value="7d0552"/>
+                <option name="FONT_TYPE" value="1"/>
+            </value>
+        </option>
+        <option name="GALEN_OBJECT_HEADER">
+            <value>
+                <option name="FOREGROUND" value="0f5f8f"/>
+                <option name="FONT_TYPE" value="1"/>
+            </value>
+        </option>
         <option name="GALEN_JS_KEYWORD">
             <value>
                 <option name="FOREGROUND" value="007d7d"/>

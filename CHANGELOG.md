@@ -5,6 +5,34 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.12.0]
+
+Corrections, all from feedback. Two of the rules added in 0.11.0 were simply wrong about what Galen
+permits, which is worse than not having them.
+
+### Fixed
+
+- **`left-of button` is valid and is no longer reported.** `SpecWithObjectAndRangeProcessor` reads a
+  range only if there is more input and otherwise defaults to `>= 0`, so `above`, `below`,
+  `left-of` and `right-of` need no range at all. Only `width` and `height` genuinely require one.
+- **A range with a comparison operator needs no unit.** `ExpectRange` returns early for `> 40`,
+  `< 40`, `>= 40` and `~ 100`, so those were being reported wrongly. A bare exact range and a `to`
+  range do still require the unit, and Galen throws without it — so those stay errors rather than
+  becoming warnings.
+- **GL304 now underlines the offending unit**, not the `to` that merely reveals it. For
+  `height 400px to 800px` the mistake is the first `px`, and there is now a fix to remove it.
+- **Section headers and `${...}` expressions no longer share a colour.** Making sections visible in
+  0.6.0 moved them onto METADATA, which is what expressions already used. Object statement headers
+  and ordinary object references had likewise resolved to the same purple, differing only by
+  italics. Both pairs are now separated per scheme.
+
+### Notes
+
+- The palette is now checked by asking the live colour scheme what each key actually paints, both
+  that nothing is invisible and that constructs a reader must tell apart do not share ink. That is
+  how these two collisions were found.
+- Test suite grew from 284 to 294.
+
 ## [0.11.0]
 
 All from feedback on real use. Every one of these parsed cleanly before, which was the problem —
@@ -358,7 +386,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/kristianduke/galen-linter/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/kristianduke/galen-linter/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/kristianduke/galen-linter/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/kristianduke/galen-linter/compare/v0.8.0...v0.9.0

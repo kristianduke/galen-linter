@@ -49,6 +49,23 @@ class GalenReportedIssuesTest : BasePlatformTestCase() {
         assertTrue("Should explain which bound carries the unit, got $found", found.any { it.contains("last bound") })
     }
 
+    /**
+     * The squiggle belongs on the offending unit, not on the `to` that merely reveals it.
+     * Pointing at `to` invites deleting the wrong thing.
+     */
+    fun testUnitOnTheFirstBoundUnderlinesTheUnitItself() {
+        myFixture.enableInspections(GalenInvalidSpecInspection())
+        myFixture.configureByText("t.gspec", "= Main =\n    target:\n        height 400px to 800px\n")
+
+        val info = myFixture.doHighlighting()
+            .firstOrNull { it.description?.startsWith("GL304") == true }
+        assertNotNull("Expected a GL304 finding", info)
+
+        val highlighted = myFixture.file.text.substring(info!!.startOffset, info.endOffset)
+        assertEquals("The first bound's unit is the mistake", "px", highlighted)
+    }
+
+
     // ---- "width 154 to 164p" -----------------------------------------------
 
     fun testMistypedUnitIsReported() {
@@ -63,6 +80,45 @@ class GalenReportedIssuesTest : BasePlatformTestCase() {
     fun testPercentIsAValidUnit() = assertClean("        width 100 % of other/width\n")
 
     fun testMissingRangeEntirelyIsReported() = assertReports("GL304", "        width\n")
+
+    // ---- what Galen actually permits ---------------------------------------
+
+    /**
+     * `SpecWithObjectAndRangeProcessor` defaults the range to `>= 0` when none is given, so these
+     * four are complete without one. Only `width` and `height` read a range unconditionally.
+     */
+    fun testPositionalSpecsDoNotRequireARange() {
+        assertClean("        left-of buttonName\n")
+        assertClean("        right-of buttonName\n")
+        assertClean("        above caption\n")
+        assertClean("        below caption\n")
+    }
+
+    /**
+     * `ExpectRange` returns early for a range carrying a comparison operator, so no unit is
+     * needed there — while a bare exact range still throws without one.
+     */
+    fun testComparisonRangesNeedNoUnit() {
+        assertClean("        width > 40\n")
+        assertClean("        width < 40\n")
+        assertClean("        width >= 40\n")
+        assertClean("        height ~ 100\n")
+    }
+
+    fun testComparisonRangesWithUnitsAreAlsoFine() {
+        assertClean("        width > 40 px\n")
+        assertClean("        width ~ 95 % of other/width\n")
+    }
+
+    /**
+     * A `to` range does need one: ExpectRange reads the second value then insists on the ending
+     * word, throwing Expecting "px", got "top". A real error, not a shorthand Galen tolerates.
+     */
+    fun testToRangeWithoutAUnitIsStillReported() =
+        assertReports("GL304", "        inside container 16 to 24px left right, 20 to 28 top\n")
+
+    fun testBothSideGroupsWithUnitsAreAccepted() =
+        assertClean("        inside container 16 to 24px left right, 20 to 28px top\n")
 
     /** `count` ranges legitimately have no unit, so they must not be caught by this. */
     fun testCountRangeIsNotReported() {

@@ -157,13 +157,23 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             return
         }
 
-        // `to` outside a range means the range ended early — the unit was put on the first bound.
+        // A `to` outside a range means the range ended early, because a unit was put on the first
+        // bound. The `to` is where the damage shows, but the unit before it is the mistake — so
+        // that is what gets underlined, and what the fix removes.
         val strayTo = loose.firstOrNull { it.text == "to" }
         if (strayTo != null) {
+            val firstBound = ranges.lastOrNull { it.textRange.endOffset <= strayTo.textRange.startOffset }
+            val offendingUnit = firstBound?.let { descendantsOfType(it, GalenTypes.UNIT).lastOrNull() }
+
             holder.registerProblem(
-                strayTo,
+                offendingUnit ?: strayTo,
                 "GL304: Only the last bound of a range carries the unit. " +
                     "Write '400 to 800px', not '400px to 800px'.",
+                *(if (offendingUnit != null) {
+                    arrayOf(GalenReplaceRangeFix("", "Remove the unit from the first bound"))
+                } else {
+                    emptyArray()
+                }),
             )
             return
         }
@@ -171,6 +181,8 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
         for (range in ranges) {
             if (isDynamic(range.text)) continue
             if (descendantsOfType(range, GalenTypes.UNIT).isNotEmpty()) continue
+            // `> 40`, `~ 100` and friends are complete without a unit.
+            if (hasComparisonOperator(range)) continue
 
             // The token straight after the range is usually the mistyped unit.
             val suspect = loose.firstOrNull { it.textRange.startOffset >= range.textRange.endOffset }
@@ -190,6 +202,16 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
                 )
             }
         }
+    }
+
+    /** True when the range is expressed with a comparison, which makes its unit optional. */
+    private fun hasComparisonOperator(range: PsiElement): Boolean {
+        var child = range.firstChild
+        while (child != null) {
+            if (child.node?.elementType in COMPARISON_OPERATORS) return true
+            child = child.nextSibling
+        }
+        return false
     }
 
     /** Direct-child tokens of the arguments that carry meaning, i.e. not punctuation or space. */
@@ -358,8 +380,25 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             "width", "height", "above", "below", "left-of", "right-of", "near", "inside", "on",
         )
 
-        /** Specs that cannot work without a range at all. */
-        val RANGE_REQUIRED = setOf("width", "height", "above", "below", "left-of", "right-of")
+        /**
+         * Specs that cannot work without a range.
+         *
+         * Only these two: `SpecWithRangeProcessor` reads a range unconditionally, whereas
+         * `SpecWithObjectAndRangeProcessor` — which backs `above`, `below`, `left-of` and
+         * `right-of` — defaults to `>= 0` when none is given, so `left-of button` is valid.
+         */
+        val RANGE_REQUIRED = setOf("width", "height")
+
+        /**
+         * A range carrying one of these needs no unit.
+         *
+         * `ExpectRange` returns early for any range with a comparison operator, so `width > 40` is
+         * accepted while a bare `width 40` throws. `-` is excluded: it makes a value negative, not
+         * a comparison, and `-10px` still needs its unit.
+         */
+        val COMPARISON_OPERATORS = setOf(
+            GalenTypes.LT, GalenTypes.GT, GalenTypes.LE, GalenTypes.GE, GalenTypes.TILDE,
+        )
 
         val REQUIRES_VISIBILITY = setOf(
             "near", "inside", "on", "above", "below", "left-of", "right-of",

@@ -634,6 +634,18 @@ Decimals **are** accepted: `ExpectRangeValue` / `RangeValue` retain precision **
 
 Units are `px`, `%`, or none — `count` configures the range with no ending word **[S]**.
 
+**Whether a unit is required depends on the shape of the range** **[S]**. Reading `ExpectRange.read`:
+
+| Range | Unit | Why |
+|---|---|---|
+| `100px`, `50 to 200px` | **required** | falls through to the ending-word check, which throws `Expecting "px", to or "%", got "…"` |
+| `> 40`, `< 40`, `>= 40`, `~ 100` | **optional** | `rangeType != NOTHING` returns the range before the ending word is ever demanded |
+| `100 % of main/width` | n/a | the `%` branch consumes the relative path instead |
+| `count … is 4 to 5` | none | `setNoEndingWord()` |
+
+So `width > 40` is valid but a bare `width 40` is not, and `20 to 28` without a unit throws — it is
+a genuine error rather than a shorthand Galen tolerates.
+
 In `N % of <path>`, the path is read as **any** word; Galen does not validate it against `width`/`height` at parse time **[S]**, so an unknown property is a lint warning rather than a syntax error.
 
 ---
@@ -678,6 +690,13 @@ caption:
 description:
     below caption 10 to 20 px
 ```
+
+**The range is optional** **[S]**. `SpecWithObjectAndRangeProcessor` — which backs `above`, `below`,
+`left-of` and `right-of` — reads a range only `if (reader.hasMore())`, and otherwise defaults to
+`Range.greaterThanOrEquals(0)`. So `left-of button` is valid and means "at least 0 away".
+
+This is *not* true of `width` and `height`: `SpecWithRangeProcessor` reads a range unconditionally
+and then throws `Unexpected token: …` for anything left over on the line.
 
 Sugar over `near` for readability **[D]**. No side keywords.
 
