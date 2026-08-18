@@ -68,6 +68,9 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             for (side in descendantsOfType(args, GalenTypes.SIDE)) {
                 val text = side.text
                 if (text in GalenTypes.SIDES || isDynamic(text)) continue
+                // A `to` in side position always means a malformed range — the side-group parser
+                // simply took it because it was the next word. GL304 explains that properly.
+                if (text == "to") continue
                 val suggestion = closestMatch(text, GalenTypes.SIDES)
                 val hint = if (suggestion != null) " Did you mean '$suggestion'?" else ""
                 holder.registerProblem(
@@ -160,7 +163,11 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
         // A `to` outside a range means the range ended early, because something was attached to
         // the first bound. The `to` is only where the damage surfaces — the token before it is the
         // mistake, so that is what gets underlined and what the fix removes.
-        val strayTo = loose.firstOrNull { it.text == "to" }
+        // Searched across the whole argument list, not just its direct children: in `near` and
+        // `inside` the side-group parser absorbs the stray `to` into a SIDE node, so looking only
+        // at the top level would miss exactly the specs where side groups exist.
+        val outside = tokensOutsideRanges(args)
+        val strayTo = outside.firstOrNull { it.text == "to" }
         if (strayTo != null) {
             val firstBound = ranges.lastOrNull { it.textRange.endOffset <= strayTo.textRange.startOffset }
 
@@ -170,7 +177,7 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             // `10p to 15px` — a malformed unit, which the range parser did not claim at all, so it
             // is left stranded between the first bound and the `to`.
             val malformedUnit = firstBound?.let { bound ->
-                loose.firstOrNull {
+                outside.firstOrNull {
                     it.textRange.startOffset >= bound.textRange.endOffset &&
                         it.textRange.endOffset <= strayTo.textRange.startOffset
                 }
@@ -229,6 +236,34 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             child = child.nextSibling
         }
         return false
+    }
+
+    /**
+     * Meaningful tokens anywhere in the arguments that are *not* part of a parsed range.
+     *
+     * A range's own contents are by definition correctly placed; everything else is a candidate
+     * for being in the wrong place. Collected across the whole subtree because side groups nest.
+     */
+    private fun tokensOutsideRanges(args: PsiElement): List<PsiElement> {
+        val result = mutableListOf<PsiElement>()
+        fun walk(element: PsiElement) {
+            if (typeOf(element) == GalenTypes.RANGE) return
+            val type = element.node?.elementType
+            if (type == GalenTypes.WORD || type == GalenTypes.NUMBER || type == GalenTypes.STRING) {
+                result += element
+            }
+            var child = element.firstChild
+            while (child != null) {
+                walk(child)
+                child = child.nextSibling
+            }
+        }
+        var child = args.firstChild
+        while (child != null) {
+            walk(child)
+            child = child.nextSibling
+        }
+        return result.sortedBy { it.textRange.startOffset }
     }
 
     /** Direct-child tokens of the arguments that carry meaning, i.e. not punctuation or space. */

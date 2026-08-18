@@ -5,6 +5,27 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.12.2]
+
+### Fixed
+
+- **GL304's anchoring now reaches `near`, `inside` and `on`.** Those specs parse their ranges inside
+  side groups, and the side-group parser absorbs the stray `to` as though it were a side keyword —
+  so a search restricted to the top level never saw it. `inside container 10px to 20px left`
+  underlined the `to` and reported it as an invalid side: the right token, with the wrong
+  explanation and a "did you mean" that would have made things worse. It now underlines the
+  misplaced `px`, like every other spec.
+- A `to` in side position is no longer reported as a bad side keyword, since it always means a
+  malformed range.
+
+### Notes
+
+- The anchoring is positional, not a list of known typos: whatever sits between the first bound and
+  the `to` is the mistake, whether or not it resembles a unit. A table-driven test now pins that
+  across `p`, `pxx`, `pixels`, `em`, `%` and a correctly-spelled but misplaced `px`, over the flat
+  specs, the object-and-range specs and the side-group specs.
+- Test suite grew from 297 to 303.
+
 ## [0.12.1]
 
 ### Fixed
@@ -405,7 +426,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.12.1...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.12.2...HEAD
+[0.12.2]: https://github.com/kristianduke/galen-linter/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/kristianduke/galen-linter/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/kristianduke/galen-linter/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/kristianduke/galen-linter/compare/v0.10.0...v0.11.0
