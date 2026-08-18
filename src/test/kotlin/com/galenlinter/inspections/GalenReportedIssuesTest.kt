@@ -65,6 +65,46 @@ class GalenReportedIssuesTest : BasePlatformTestCase() {
         assertEquals("The first bound's unit is the mistake", "px", highlighted)
     }
 
+    /**
+     * A *malformed* unit on the first bound is not claimed by the range parser at all, so it ends
+     * up stranded between the bound and the `to`. Earlier this fell through to underlining the
+     * `to`, which points at the symptom rather than the mistake.
+     */
+    fun testMalformedUnitOnTheFirstBoundUnderlinesThatUnit() {
+        myFixture.enableInspections(GalenInvalidSpecInspection())
+        myFixture.configureByText("t.gspec", "= Main =\n    target:\n        width 10p to 15px\n")
+
+        val info = myFixture.doHighlighting()
+            .firstOrNull { it.description?.startsWith("GL304") == true }
+        assertNotNull("Expected a GL304 finding", info)
+
+        val highlighted = myFixture.file.text.substring(info!!.startOffset, info.endOffset)
+        assertEquals("The malformed unit is the mistake, not the \"to\"", "p", highlighted)
+    }
+
+    fun testRemovingAMalformedFirstBoundUnitFixesIt() {
+        myFixture.enableInspections(GalenInvalidSpecInspection())
+        myFixture.configureByText("t.gspec", "= Main =\n    target:\n        width 10<caret>p to 15px\n")
+
+        val fix = myFixture.filterAvailableIntentions("Remove it from the first bound").firstOrNull()
+        assertNotNull("Expected a fix, got ${myFixture.availableIntentions.map { it.text }}", fix)
+        myFixture.launchAction(fix!!)
+
+        assertEquals("= Main =\n    target:\n        width 10 to 15px\n", myFixture.file.text)
+    }
+
+    /** The already-working case must keep working. */
+    fun testValidUnitOnTheFirstBoundStillUnderlinesTheUnit() {
+        myFixture.enableInspections(GalenInvalidSpecInspection())
+        myFixture.configureByText("t.gspec", "= Main =\n    target:\n        width 10px to 15px\n")
+
+        val info = myFixture.doHighlighting()
+            .firstOrNull { it.description?.startsWith("GL304") == true }
+        val highlighted = myFixture.file.text.substring(info!!.startOffset, info.endOffset)
+        assertEquals("px", highlighted)
+    }
+
+
 
     // ---- "width 154 to 164p" -----------------------------------------------
 

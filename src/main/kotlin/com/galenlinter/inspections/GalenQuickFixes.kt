@@ -102,9 +102,13 @@ class GalenReplaceRangeFix(
         val documentManager = PsiDocumentManager.getInstance(project)
         val document = documentManager.getDocument(file) ?: return
 
-        val relative = descriptor.textRangeInElement ?: return
-        val start = element.textRange.startOffset + relative.startOffset
-        val end = element.textRange.startOffset + relative.endOffset
+        // textRangeInElement is null whenever the problem was registered without an explicit
+        // range — the whole element is then the target. Returning early on null made the fix
+        // silently do nothing, which is worse than not offering it.
+        val relative = descriptor.textRangeInElement
+        val elementStart = element.textRange.startOffset
+        val start = if (relative != null) elementStart + relative.startOffset else elementStart
+        val end = if (relative != null) elementStart + relative.endOffset else element.textRange.endOffset
         if (start < 0 || end > document.textLength || start > end) return
 
         document.replaceString(start, end, replacement)

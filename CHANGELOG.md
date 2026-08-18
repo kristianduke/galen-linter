@@ -5,6 +5,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.12.1]
+
+### Fixed
+
+- **GL304 now anchors on a malformed unit too.** `10px to 15px` already underlined the offending
+  `px`, but `10p to 15px` fell back to underlining the `to`: a malformed unit never parses into the
+  range, so there was no unit node to find. The check now also looks for a token stranded between
+  the first bound and the `to`.
+- **Two quick fixes were offered but did nothing when clicked.** `ProblemDescriptor.textRangeInElement`
+  is null whenever a problem is registered without an explicit range, and the fix returned early on
+  null instead of treating the whole element as the target. This affected "Remove the unit from the
+  first bound" and "Remove 'is'".
+
+### Notes
+
+- Both fixes now have tests that apply the fix and assert the resulting document text, rather than
+  only asserting that the fix was offered — which is precisely what let the no-op ship twice.
+- Test suite grew from 294 to 297.
+
 ## [0.12.0]
 
 Corrections, all from feedback. Two of the rules added in 0.11.0 were simply wrong about what Galen
@@ -386,7 +405,8 @@ First release. Milestone 1: lexer, parser, PSI and syntax-level inspections.
 - Spec argument grammars are parsed as an opaque argument list for now; per-spec validation
   (the GL3xx rules) arrives with milestone 3.
 
-[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/kristianduke/galen-linter/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/kristianduke/galen-linter/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/kristianduke/galen-linter/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/kristianduke/galen-linter/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/kristianduke/galen-linter/compare/v0.9.0...v0.10.0

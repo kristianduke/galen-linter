@@ -157,20 +157,37 @@ class GalenInvalidSpecInspection : GalenSpecInspection() {
             return
         }
 
-        // A `to` outside a range means the range ended early, because a unit was put on the first
-        // bound. The `to` is where the damage shows, but the unit before it is the mistake — so
-        // that is what gets underlined, and what the fix removes.
+        // A `to` outside a range means the range ended early, because something was attached to
+        // the first bound. The `to` is only where the damage surfaces — the token before it is the
+        // mistake, so that is what gets underlined and what the fix removes.
         val strayTo = loose.firstOrNull { it.text == "to" }
         if (strayTo != null) {
             val firstBound = ranges.lastOrNull { it.textRange.endOffset <= strayTo.textRange.startOffset }
-            val offendingUnit = firstBound?.let { descendantsOfType(it, GalenTypes.UNIT).lastOrNull() }
+
+            // `400px to 800px` — a real unit in the wrong place, so it parsed into the range.
+            val misplacedUnit = firstBound?.let { descendantsOfType(it, GalenTypes.UNIT).lastOrNull() }
+
+            // `10p to 15px` — a malformed unit, which the range parser did not claim at all, so it
+            // is left stranded between the first bound and the `to`.
+            val malformedUnit = firstBound?.let { bound ->
+                loose.firstOrNull {
+                    it.textRange.startOffset >= bound.textRange.endOffset &&
+                        it.textRange.endOffset <= strayTo.textRange.startOffset
+                }
+            }
+
+            val offender = misplacedUnit ?: malformedUnit
+            val detail = if (malformedUnit != null && misplacedUnit == null) {
+                "'${malformedUnit.text}' is not a unit, and the unit belongs on the last bound anyway."
+            } else {
+                "Only the last bound of a range carries the unit."
+            }
 
             holder.registerProblem(
-                offendingUnit ?: strayTo,
-                "GL304: Only the last bound of a range carries the unit. " +
-                    "Write '400 to 800px', not '400px to 800px'.",
-                *(if (offendingUnit != null) {
-                    arrayOf(GalenReplaceRangeFix("", "Remove the unit from the first bound"))
+                offender ?: strayTo,
+                "GL304: $detail Write '400 to 800px', not '400px to 800px'.",
+                *(if (offender != null) {
+                    arrayOf(GalenReplaceRangeFix("", "Remove it from the first bound"))
                 } else {
                     emptyArray()
                 }),
